@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import fieldColl from '@/db/field';
 import type { Field } from '@/types/field';
 import { NextRequest, NextResponse } from 'next/server';

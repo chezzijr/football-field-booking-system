@@ -35,7 +35,7 @@ export default function HomePage(props: HomePageProps) {
         <>
             {
                 fields.map((field: Field) => (
-                    <div>
+                    <div key={field.no}>
                         <h1>{field.no}</h1>
                         <p>{field.isAvailable}</p>
                         <p>{field.isMaintained}</p>
