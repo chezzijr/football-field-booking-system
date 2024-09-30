@@ -4,14 +4,14 @@ import type { Field } from '@/types/field';
 const coll = db.collection('football_field');
 
 export default {
-    read: async (id: string) => {
-        return await coll.findOne({ id: id }) as Field | null;
+    read: async (no: number) => {
+        return await coll.findOne({ no: no }) as Field | null;
     },
     readAll: async () => {
         return await coll.find().toArray() as any as Field[];
     },
     add: async (field: Field) => {
-        coll.insertOne(field);
+        await coll.insertOne(field);
         return field
     },
     update: async (no: number, field: Partial<Field>) => {
