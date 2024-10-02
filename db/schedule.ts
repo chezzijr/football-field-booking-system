@@ -20,7 +20,7 @@ function getWeek() {
 export default {
     readCurrWeek: async () => {
         const [startMonday, endSunday] = getWeek();
-        const docs = await coll.find({ date: { $gte: startMonday, $lte: endSunday } }).toArray() as any as Schedule[];
+        const docs = await coll.find({ start: { $gte: startMonday, $lte: endSunday } }).toArray() as any as Schedule[];
         return docs;
     },
     readAll: async () => {
@@ -30,15 +30,15 @@ export default {
         await coll.insertOne(sched);
         return sched
     },
-    update: async (date: Date, time: number, sched: Partial<Schedule>) => {
-        const doc = await coll.findOneAndUpdate({ date, time }, { $set: sched });
+    update: async (id: string, sched: Partial<Schedule>) => {
+        const doc = await coll.findOneAndUpdate({ id }, { $set: sched });
         return doc as Schedule | null
     },
     upsert: async (sched: Schedule) => {
-        const doc = await coll.findOneAndUpdate({ date: sched.date, time: sched.time }, { $set: sched }, { upsert: true });
+        const doc = await coll.findOneAndUpdate({ id: sched.id }, { $set: sched }, { upsert: true });
         return doc as Schedule | null;
     },
-    delete: async (date: Date, time: number) => {
-        return await coll.findOneAndDelete({ date, time }) as Schedule | null;
+    delete: async (id: string) => {
+        return await coll.findOneAndDelete({ id }) as Schedule | null;
     }
 }
