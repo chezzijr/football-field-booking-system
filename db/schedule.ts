@@ -34,6 +34,10 @@ export default {
         const doc = await coll.findOneAndUpdate({ date, time }, { $set: sched });
         return doc as Schedule | null
     },
+    upsert: async (sched: Schedule) => {
+        const doc = await coll.findOneAndUpdate({ date: sched.date, time: sched.time }, { $set: sched }, { upsert: true });
+        return doc as Schedule | null;
+    },
     delete: async (date: Date, time: number) => {
         return await coll.findOneAndDelete({ date, time }) as Schedule | null;
     }

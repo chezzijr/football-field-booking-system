@@ -18,6 +18,10 @@ export default {
         const doc = await coll.findOneAndUpdate({ no: no }, { $set: field });
         return doc as Field | null
     },
+    upsert: async (field: Field) => {
+        const doc = await coll.findOneAndUpdate({ no: field.no }, { $set: field }, { upsert: true });
+        return doc as Field | null;
+    },
     delete: async (no: number) => {
         return await coll.findOneAndDelete({ no: no }) as Field | null;
     }

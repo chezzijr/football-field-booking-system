@@ -15,6 +15,10 @@ export default {
         const doc = await coll.findOneAndUpdate({ username }, { $set: account });
         return doc as Account | null;
     },
+    upsert: async (account: Account) => {
+        const doc = await coll.findOneAndUpdate({ username: account.username }, { $set: account }, { upsert: true });
+        return doc as Account | null;
+    },
     delete: async (username: string) => {
         const doc = await coll.findOneAndDelete({ username });
         return doc as Account | null;
