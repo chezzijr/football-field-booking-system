@@ -23,6 +23,10 @@ export default {
         const docs = await coll.find({ start: { $gte: startMonday, $lte: endSunday } }).toArray() as any as Schedule[];
         return docs;
     },
+    read: async (id: string) => {
+        return await coll.findOne({ id: id }) as Schedule | null;
+    }, 
+
     readAll: async () => {
         return await coll.find().toArray() as any as Schedule[];
     },
