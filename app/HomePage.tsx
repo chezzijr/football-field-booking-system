@@ -1,6 +1,10 @@
 "use client"
 import { Field } from "@/types/field";
 import { FormEvent, useState } from "react";
+import DashboardLayoutSlots from "./DashBoard/BookingField/DBandBookingField"
+
+import * as React from 'react';
+import Box from '@mui/material/Box';
 
 export type HomePageProps = {
     fields: Field[];
@@ -32,19 +36,23 @@ export default function HomePage(props: HomePageProps) {
     }
 
     return (
-        <>
-            {
-                fields.map((field: Field) => (
-                    <div key={field.no}>
-                        <h1>{field.no}</h1>
-                        <p>{field.isAvailable}</p>
-                        <p>{field.isMaintained}</p>
-                    </div>
-                ))
-            }
-            <form onSubmit={handleFormSubmit}>
-                <button type="submit">Add Field</button>
-            </form>
-        </>
+        <Box>
+            <DashboardLayoutSlots/>
+        </Box>
+        // <>
+        //     {
+        //         fields.map((field: Field) => (
+        //             <div>
+        //                 <h1>{field.no}</h1>
+        //                 <p>{field.isAvailable}</p>
+        //                 <p>{field.isMaintained}</p>
+        //             </div>
+        //         ))
+        //     }
+        //     <form onSubmit={handleFormSubmit}>
+        //         <button type="submit">Add Field</button>
+        //     </form>
+        // </>
+        
     );
 }
