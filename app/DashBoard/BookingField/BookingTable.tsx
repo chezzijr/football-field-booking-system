@@ -56,9 +56,9 @@ export function BookingTable() {
 
     useEffect(() => {
         fetch("/api/schedule?currentWeek", { method: 'GET', cache: 'reload' })
-            .then((response) => response.json())
+            .then((response) => response.json() as any as Schedule[])
             .then((schedules) => {
-                setSchedules(schedules);
+                setSchedules(schedules.filter(s => new Date(s.start).getDate() === new Date().getDate()));
             })
             .catch((error) => console.error('Error!!!:', error));
     }, [adding]);
