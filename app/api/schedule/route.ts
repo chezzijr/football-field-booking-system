@@ -2,19 +2,10 @@ import { NextResponse } from 'next/server';
 import scheduleService from '@/services/schedule';
 import { Schedule } from '@/types/schedule';
 
-// GET method - Fetch all schedules or current week schedules
 export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const currentWeek = searchParams.get('currentWeek');
-
     try {
-        if (currentWeek) {
-            const schedules = await scheduleService.getCurrentWeekSchedules();
-            return NextResponse.json(schedules);
-        } else {
-            const schedules = await scheduleService.getAllSchedules();
-            return NextResponse.json(schedules);
-        }
+        const prods = await scheduleService.getAllSchedules();
+        return NextResponse.json(prods);
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
@@ -50,7 +41,6 @@ export async function PUT(req: Request) {
     }
 }
 
-// DELETE method - Delete a schedule by 'id'
 export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
