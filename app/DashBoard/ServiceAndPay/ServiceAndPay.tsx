@@ -81,6 +81,7 @@ export function ServiceAndPay() {
                             <BasicSelect title='Loại dịch vụ' selection={typeService} value={selectedType} onChange={setSelectedType} />
                             <BasicSelect title='Nước uống' selection={othersService} value={othersType} onChange={setOthersType} />
                             <QuantitySelector />
+                            <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0)}</StyledH3>
                         </Box>
                         <Button
                             variant="contained"
@@ -90,8 +91,9 @@ export function ServiceAndPay() {
                             onClick={() => {
                                 const serviceTotal = typeService.find(t => t.value === selectedType)?.price || 0;
                                 const othersTotal = othersService.find(t => t.value === othersType)?.price || 0;
+                                const randomId = (Math.random() + 1).toString(36).substring(7);
                                 const bill: Payment = {
-                                    id: (Math.random() + 1).toString(36).substring(16),
+                                    id: randomId,
                                     amount: serviceTotal + othersTotal,
                                     description: `Dịch vụ: ${typeService.find(t => t.value === selectedType)?.label || 'Không'}; Nước: ${othersService.find(t => t.value === othersType)?.label || 'Không'}`,
                                     date: new Date(),
