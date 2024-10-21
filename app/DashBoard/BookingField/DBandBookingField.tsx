@@ -1,11 +1,6 @@
 import * as React from 'react';
-import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-// import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import { useState, useEffect } from 'react';
+import { Box, TextField, Divider, Checkbox } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -23,21 +18,15 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
-import { BookingTable, BookingTableFull, Booking, BookingList, priceField } from './BookingTable';
+import { BookingTable, FieldType } from './BookingTable';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import dayjs, { Dayjs } from 'dayjs';
 import { ServiceAndPay } from '../ServiceAndPay/ServiceAndPay';
 import { UpdateInformation } from '../Data/UpdateInfo';
-import { Rows } from '../Data/UpdateInfo';
+
 
 const NAVIGATION: Navigation = [
   {
@@ -157,15 +146,58 @@ export const BasicSelect: React.FC<BasicSelectProps> = ({ title, selection, valu
   );
 };
 
+type SelectProps = {
+  label: string;
+  value: number;
+  selection: Array<{ label: string; value: string }>;
+  onChange: (value: number) => void;
+};
+
+const FieldSelect: React.FC<SelectProps> = ({ label, value, selection, onChange }) => {
+  const handleChange = (event: SelectChangeEvent<number>) => {
+    onChange(event.target.value as number);
+  };
+
+  return (
+    <Box sx={{ minWidth: 120, padding: '0.5rem 1rem', width: '25ch' }}>
+      <FormControl fullWidth>
+        <InputLabel size='small' id="basic-select-label">{label}</InputLabel>
+        <Select
+          size='small'
+          labelId="basic-select-label"
+          id="basic-select"
+          value={value}
+          label={label}
+          onChange={handleChange}
+        // sx={{
+        //   backgroundColor: '#f0f0f0',
+        //   borderRadius: '5px',
+        //   border: '1px solid #ccc',
+        //   fontSize: '16px',
+        // }}
+        >
+          {selection.map((item, index) => (
+            <MenuItem key={index} value={item.value}>
+              {item.label}
+            </MenuItem>
+          ))}
+          {/* {[0, 1, 2, 3, 4, 5].map((num) => (
+            <MenuItem key={num} value={num}>
+              {num}
+            </MenuItem>
+          ))} */}
+        </Select>
+      </FormControl>
+    </Box>
+  );
+};
+
 type BasicTextFieldsProps = {
   label: string;
   inputValue: string;
-  onInputChange: (value: string) => void;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 function BasicTextFields({ label, inputValue, onInputChange }: BasicTextFieldsProps) {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onInputChange(event.target.value); // Pass the value to the parent on each keystroke
-  };
   return (
     <Box
       component="form"
@@ -173,41 +205,56 @@ function BasicTextFields({ label, inputValue, onInputChange }: BasicTextFieldsPr
       noValidate
       autoComplete="off"
     >
-      <TextField id="outlined-basic" label={label} variant="outlined" size="small"
+      <TextField
+        InputLabelProps={{
+          shrink: true,
+        }}
+        id="outlined-basic" label={label} variant="outlined" size="small"
         value={inputValue}
-        onChange={handleChange} />
+        onChange={onInputChange} />
     </Box>
   );
 }
 
-
-type BasicDateTimePickerProps = {
+interface BasicDateTimeInputProps {
   label: string;
-  selectedDateTimeCome: Dayjs | null; // Receive selectedDateTimeCome as a prop
-  onDateTimeChange: (value: Dayjs | null) => void; // Function to call when date-time changes
-};
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
-function BasicDateTimePicker({ label, selectedDateTimeCome, onDateTimeChange }: BasicDateTimePickerProps) {
-  const handleDateTimeChange = (newDateTime: Dayjs | null) => {
-    onDateTimeChange(newDateTime);
-  };
+const BasicDateTimeInput: React.FC<BasicDateTimeInputProps> = ({ label, value, onChange }) => {
   return (
     <Box sx={{ padding: '0.5rem 1rem', maxWidth: '35ch' }}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer components={['DateTimePicker']}>
-          <DateTimePicker label={label}
-            value={selectedDateTimeCome}
-            onChange={handleDateTimeChange}
-            slotProps={{
-              textField: {
-                size: 'small',
-              },
-            }} />
-        </DemoContainer>
-      </LocalizationProvider>
+      <TextField
+        size='small'
+        label={label}
+        type="datetime-local"
+        value={value}
+        onChange={onChange}
+        variant="outlined"
+        InputLabelProps={{
+          shrink: true,
+        }}
+        sx={{
+          backgroundColor: 'white',
+          borderRadius: '5px',
+          width: '100%',
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#ccc',
+            },
+            '&:hover fieldset': {
+              borderColor: 'blue', // Change border color on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'blue', // Change border color when focused
+            },
+          },
+        }}
+      />
     </Box>
   );
-}
+};
 
 
 type BasicDatePickerProps = {
@@ -237,36 +284,21 @@ function BasicDatePicker({ label, selectedDate, onDateChange }: BasicDatePickerP
   );
 }
 
-function RowRadioButtonsGroup() {
-  return (
-    <FormControl sx={{ padding: '0.5rem 1rem' }}>
-      <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
-      <RadioGroup
-        row
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
-      >
-        <FormControlLabel value="female" control={<Radio />} label="Nam" />
-        <FormControlLabel value="male" control={<Radio />} label="Nữ" />
-      </RadioGroup>
-    </FormControl>
-
-  );
+//  Dat san ----------------------------------------------------------------------------------------------------------------------------------------------------
+export interface Schedule {
+  id: string;
+  fieldNo: number;
+  start: string;
+  end: string;
+  duration: number;
+  customer: string;
+  customerPhone: string;
+  paid: boolean;
 }
 
-//  Dat san ----------------------------------------------------------------------------------------------------------------------------------------------------
+export let adding = false;
 
 function RegisterInfo() {
-  const [selectedType, setSelectedType] = useState<{ [key: string]: string }>({
-    fieldType: '',
-    customerType: '',
-  });
-  const handleSelectChange = (field: string, value: string) => {
-    setSelectedType((prevValues) => ({
-      ...prevValues,
-      [field]: value,
-    }));
-  };
 
   const [inputValue, setInputValue] = useState<{ [key: string]: string }>({
     fullName: '',
@@ -277,61 +309,70 @@ function RegisterInfo() {
     numberOfPeople: '',
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    setInputValue((prevValues) => ({
-      ...prevValues,
-      [field]: value,
-    }));
-  };
-
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   const handleDateChange = (date: Dayjs | null) => {
-    setSelectedDate(date); // Update the selected date
+    setSelectedDate(date); 
   };
 
-  const [selectedDateTimeCome, setSelectedDateTimeCome] = useState<Dayjs | null>(null);
+  const [schedule, setSchedule] = useState<Omit<Schedule, 'fieldNo' | 'paid' | 'duration'>>({
+    id: '',
+    start: '',
+    end: '',
+    customer: '',
+    customerPhone: '',
+  });
+  const [fieldNo, setFieldNo] = React.useState<number>(0);
+  const [duration, setDuration] = useState<number | ''>('');
+  const [paid, setPaid] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleDateTimeChange = (dateTime: Dayjs | null) => {
-    setSelectedDateTimeCome(dateTime);
-  };
-  const [selectedDateTimeGo, setSelectedDateTimeGo] = useState<Dayjs | null>(null);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  const handleDateTimeChangeGo = (dateTime: Dayjs | null) => {
-    setSelectedDateTimeGo(dateTime);
-  };
-  const timeStart = selectedDateTimeCome ? selectedDateTimeCome.format('YYYY-MM-DD HH:mm') : dayjs().format('YYYY-MM-DD HH:mm');
-  const timeEnd = selectedDateTimeGo ? selectedDateTimeGo.format('YYYY-MM-DD HH:mm') : dayjs().format('YYYY-MM-DD HH:mm');
-
-  const [rows, setRows] = useState<Booking[]>(Rows)
-
-  const handleButtonClick = () => {
-
-    const newBooking = {
-      fullName: inputValue.fullName,
-      timeStart: timeStart,
-      fieldType: priceField.find(field => field.value === selectedType.fieldType)?.label || '', // Replace with actual field type if needed
-    };
-    const isDuplicate = rows.some(row =>
-      row.fieldType === newBooking.fieldType && (
-        (newBooking.timeStart < row.timeStart && timeEnd > row.timeStart) ||
-        (newBooking.timeStart >= row.timeStart && newBooking.timeStart < timeEnd)
-      )
-    );
-    if (isDuplicate) {
-      alert('Đã có người đặt');
+    if (!schedule.id || !schedule.start || !schedule.end || !fieldNo || !duration || !schedule.customer || !schedule.customerPhone) {
+      setError("Cần điền đủ thông tin.");
       return;
     }
+    
+    setError(null);
 
-    setRows(prevRows => [...prevRows, newBooking]);
+    try {
+      const scheduleToPost = {
+        ...schedule,
+        fieldNo: Number(fieldNo),
+        duration: Number(duration),
+        start: new Date(schedule.start),
+        end: new Date(schedule.end),
+        paid: paid
+      };
+
+      const response = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scheduleToPost),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        setError(message || 'Thêm lịch thất bại.');
+      } else {
+        const data = await response.json();
+        setSuccess('Thêm lịch thành công');
+        setSchedule({ id: '', start: '', end: '', customer: '', customerPhone: '' });
+        setFieldNo(0);
+        setDuration('');
+        setPaid(false);
+        adding = !adding;
+      }
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
-  const typeCustomer = [
-    { label: 'Trường học', value: '0' },
-    { label: 'Công ty', value: '1' },
-    { label: 'Khác', value: '2' },
-  ];
-  
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{}}>
@@ -348,20 +389,28 @@ function RegisterInfo() {
                 boxShadow: 15,
                 pb: 1,
                 '&:hover': {
-                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                  transform: 'scale(1.02)', // Slightly scale up on hover
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
+                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+                  transform: 'scale(1.02)',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 },
               }}>
               <StyledH3 sx={{ pt: '1rem' }}>Thông tin đăng ký</StyledH3>
-              <Divider sx={{mb:2, height: '2px', backgroundColor: '#a8a9aa' }} />
+              <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
               <BasicTextFields
                 label="Số lượng người tham gia"
                 inputValue={inputValue.numberOfPeople}
-                onInputChange={(value) => handleInputChange('numberOfPeople', value)}
+                onInputChange={(e) => setInputValue({})}
               />
-              <BasicDateTimePicker label="Ngày giờ nhận" selectedDateTimeCome={selectedDateTimeCome} onDateTimeChange={handleDateTimeChange} />
-              <BasicDateTimePicker label="Ngày giờ trả" selectedDateTimeCome={selectedDateTimeGo} onDateTimeChange={handleDateTimeChangeGo} />
+              <BasicDateTimeInput
+                label="Ngày giờ nhận sân"
+                value={schedule.start}
+                onChange={(e) => setSchedule({ ...schedule, start: e.target.value })}
+              />
+              <BasicDateTimeInput
+                label="Ngày giờ trả sân"
+                value={schedule.end}
+                onChange={(e) => setSchedule({ ...schedule, end: e.target.value })}
+              />
             </Grid>
 
             <Grid
@@ -379,7 +428,7 @@ function RegisterInfo() {
                 },
               }}>
               <StyledH3 sx={{ pt: '1rem' }}>Tìm kiếm khách hàng</StyledH3>
-              <Divider sx={{mb:2, height: '2px', backgroundColor: '#a8a9aa' }} />
+              <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
               <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -409,10 +458,10 @@ function RegisterInfo() {
                 },
               }}>
               <StyledH3 sx={{ pt: '1rem' }}>Thông tin loại sân</StyledH3>
-              <Divider sx={{mb:2, height: '2.5px', backgroundColor: '#a8a9aa' }} />
-              <BasicSelect title="Loại sân" selection={priceField} value={selectedType.fieldType} onChange={(value) => handleSelectChange('fieldType', value)} />
+              <Divider sx={{ mb: 2, height: '2.5px', backgroundColor: '#a8a9aa' }} />
+              <FieldSelect label='Chọn sân' value={fieldNo} selection={FieldType} onChange={setFieldNo} />
               <Box sx={{ padding: '1rem' }}>
-                <Button variant="contained" onClick={handleButtonClick}>
+                <Button variant="contained" onClick={handleSubmit}>
                   Đặt
                 </Button>
               </Box>
@@ -429,7 +478,7 @@ function RegisterInfo() {
               mb: 2,
               ml: 2,
               boxShadow: 15,
-              maxHeight: '620px',
+              // maxHeight: '800px',
               '&:hover': {
                 boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
                 transform: 'scale(1.02)', // Slightly scale up on hover
@@ -438,35 +487,44 @@ function RegisterInfo() {
             }}
           >
             <StyledH3>Thông tin khách hàng</StyledH3>
-            <Divider sx={{mb:2, height: '2px', backgroundColor: '#a8a9aa' }} />
+            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
             <BasicTextFields
-              label="Họ và tên"
-              inputValue={inputValue.fullName}
-              onInputChange={(value) => handleInputChange('fullName', value)}
+              label="Họ tên"
+              inputValue={schedule.customer}
+              onInputChange={(e) => setSchedule({ ...schedule, customer: e.target.value })}
+            />
+            {/* <BasicSelect title="Loại khách hàng" selection={typeCustomer} value={selectedType.customerType} onChange={(value) => handleSelectChange('customerType', value)} /> */}
+            <BasicTextFields
+              label="Số điện thoại"
+              inputValue={schedule.customerPhone}
+              onInputChange={(e) => setSchedule({ ...schedule, customerPhone: e.target.value })}
             />
             <BasicTextFields
               label="Số CCCD"
-              inputValue={inputValue.idNumber}
-              onInputChange={(value) => handleInputChange('idNumber', value)}
-            />
-            <BasicSelect title="Loại khách hàng" selection={typeCustomer} value={selectedType.customerType} onChange={(value) => handleSelectChange('customerType', value)} />
-            <BasicTextFields
-              label="Số điện thoại"
-              inputValue={inputValue.phoneNumber}
-              onInputChange={(value) => handleInputChange('phoneNumber', value)}
+              inputValue={schedule.id}
+              onInputChange={(e) => setSchedule({ ...schedule, id: e.target.value })}
             />
             <BasicDatePicker label='Ngày sinh' selectedDate={selectedDate} onDateChange={handleDateChange} />
             <BasicTextFields
               label="Địa chỉ"
               inputValue={inputValue.address}
-              onInputChange={(value) => handleInputChange('address', value)}
+              onInputChange={(e) => setInputValue({})}
             />
-            <RowRadioButtonsGroup />
-            <BasicTextFields
-              label="Quốc tịch"
-              inputValue={inputValue.nationality}
-              onInputChange={(value) => handleInputChange('nationality', value)}
-            />
+            <Box sx={{ minWidth: 120, m: '0.5rem 1rem' }}>
+              <TextField
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                type='number'
+                id="outlined-basic" label="Duration" variant="outlined" size='small'
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+              />
+            </Box>
+            <Box sx={{ m: '0.5rem 1rem' }}>
+              <FormControlLabel
+                control={<Checkbox checked={paid} onChange={(e) => setPaid(e.target.checked)} />} label="Đã thanh toán" />
+            </Box>
           </Grid>
 
           <Grid
@@ -485,9 +543,11 @@ function RegisterInfo() {
               },
             }}>
             <StyledH3>Danh sách đặt sân trong ngày</StyledH3>
-            <Divider sx={{mb:2, height: '2px', backgroundColor: '#a8a9aa' }} />
+            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
             <Box sx={{ m: 2 }}>
-              <BookingTable rows={rows} />
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+              {success && <p style={{ color: 'green' }}>{success}</p>}
+              <BookingTable />
             </Box>
           </Grid>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Import useState từ React
+import React, { useState, useEffect } from 'react'; // Import useState từ React
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,74 +16,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import {InputAdornment} from '@mui/material'
+import {InputAdornment} from '@mui/material';
+import { Schedule, adding } from './DBandBookingField';
 
-// interface BasicSelectProps {
-//   title: string;
-//   selection: { label: string; value: string }[];
-//   onChange: (value: string) => void;
-// }
-
-// const BasicSelect: React.FC<BasicSelectProps> = ({ title, selection, onChange }) => {
-//   const handleChange = (event: SelectChangeEvent<string>) => {
-//     onChange(event.target.value);
-//   };
-
-//   return (
-//     <Box sx={{ minWidth: 120, padding: '0.5rem 1rem', maxWidth: '25ch' }}>
-//       <FormControl fullWidth>
-//         <InputLabel size="small" id="basic-select-label">{title}</InputLabel>
-//         <Select labelId="basic-select-label" id="basic-select" size="small" label={title} onChange={handleChange}>
-//           {selection.map((option) => (
-//             <MenuItem key={option.value} value={option.value}>
-//               {option.label}
-//             </MenuItem>
-//           ))}
-//         </Select>
-//       </FormControl>
-//     </Box>
-//   );
-// };
-
-export const priceField = [
-  { label: 'Sân 5 cỏ nhân tạo', value: '0' },
-  { label: 'Sân 5 cỏ tự nhiên', value: '1' },
-  { label: 'Sân 7 cỏ nhân tạo', value: '2' },
-  { label: 'Sân 11', value: '3' },
+export const FieldType = [
+  { label: 'Sân', value: '0' },
+  { label: 'Sân 5 cỏ nhân tạo', value: '1' },
+  { label: 'Sân 5 cỏ tự nhiên', value: '2' },
+  { label: 'Sân 7', value: '3' },
+  { label: 'Sân 9', value: '4' },
+  { label: 'Sân 11', value: '5' },
 ];
 
 
-export const priceMap: Record<string, string> = {
-  '0': '500.000',
-  '1': '600.000',
-  '2': '700.000',
-  '3': '1.000.000.000',
-};
-
-// export function BookingComponent() {
-//   const [selectedValue, setSelectedValue] = useState<string>('');
-
-//   const handleSelectChange = (value: string) => {
-//     setSelectedValue(value);
-//   };
-
-//   return (
-//     <Box>
-//       <BasicSelect title="Loại sân" selection={priceField} onChange={handleSelectChange} />
-//       {selectedValue && (
-//         <Typography sx={{ mt: 0.5, padding: '0.5rem 1rem' }}>
-//           Giá sân: {priceMap[selectedValue]} VND
-//         </Typography>
-//       )}
-//     </Box>
-//   );
-// }
-
-export interface Booking {
-  fullName: string;
-  timeStart: string;
-  fieldType: string;
-}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   // backgroundColor: '#5c7a37', 
@@ -105,7 +50,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export function BookingTable({ rows }: { rows: Booking[] }) {
+export function BookingTable() {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+
+  useEffect(() => {
+    fetch("/api/schedule", { method: 'GET' })
+      .then((response) => response.json())
+      .then((schedules) => {
+        setSchedules(schedules);
+      })
+      .catch((error) => console.error('Error!!!:', error));
+  }, [adding]);
   return (
     <TableContainer component={Paper} sx={{ mt: 2, borderRadius: '0.5rem', overflow: 'hidden' }}>
       <Table size='small' aria-label="booking table">
@@ -117,11 +72,11 @@ export function BookingTable({ rows }: { rows: Booking[] }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {schedules.map((schedule, index) => (
             <StyledTableRow key={index}>
-              <TableCell>{row.fullName}</TableCell>
-              <TableCell>{row.timeStart}</TableCell>
-              <TableCell>{row.fieldType}</TableCell>
+              <TableCell>{schedule.customer}</TableCell>
+              <TableCell>{new Date(schedule.start).toLocaleString("vi-VN")}</TableCell>
+              <TableCell>{FieldType.find(f => Number(f.value) === schedule.fieldNo)?.label || 'Unknown Field'}</TableCell>
             </StyledTableRow>
           ))}
         </TableBody>
@@ -146,6 +101,7 @@ export interface BookingList {
 }
 
 export function BookingTableFull({ rows }: { rows: BookingList[] }) {
+  
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const filteredRows = rows.filter((row) => {

@@ -104,7 +104,7 @@ export function UpdateInformation() {
                     <StyledH3>Thông tin sân</StyledH3>
                 </Box>
                 <Divider sx={{mb:2, height: '2px', backgroundColor: '#a8a9aa' }} />
-                <BookingTableFull rows={Rows}/> 
+                <BookingTableFull rows={Rows} />
             </Box>
         </ThemeProvider>
     );
