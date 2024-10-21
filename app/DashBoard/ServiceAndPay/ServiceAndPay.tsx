@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import BillForm from './Bill';
+import {PaymentHistory} from './Transaction';
 import { StyledH3, theme, BasicSelect } from '../BookingField/DBandBookingField';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Payment } from '@/types/payment';
@@ -131,8 +131,9 @@ export function ServiceAndPay() {
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
                             },
                         }}>
-                        <StyledH3>Hóa đơn</StyledH3>
-                        <BillForm />
+                        <StyledH3>Lịch sử giao dịch</StyledH3>
+                        <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa' }} />
+                        <PaymentHistory/>
                     </Grid>
 
                 </Grid>

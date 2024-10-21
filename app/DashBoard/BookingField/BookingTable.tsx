@@ -31,7 +31,7 @@ export const FieldType = [
 
 
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     // backgroundColor: '#5c7a37', 
     backgroundColor: '#2e302d',
     fontWeight: 'bold',
@@ -41,7 +41,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     border: '1px solid #374921',
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
         // backgroundColor: '#eaf3ea', 
         backgroundColor: 'whitesmoke',
