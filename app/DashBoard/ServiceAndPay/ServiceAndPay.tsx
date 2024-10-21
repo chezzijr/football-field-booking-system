@@ -11,6 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import BillForm from './Bill';
 import { StyledH3, theme, BasicSelect } from '../BookingField/DBandBookingField';
 import PaymentIcon from '@mui/icons-material/Payment';
+import { Payment } from '@/types/payment';
 
 const QuantitySelector: React.FC = () => {
     const [quantity, setQuantity] = useState<number>(1);
@@ -42,18 +43,18 @@ const QuantitySelector: React.FC = () => {
 
 export function ServiceAndPay() {
     const typeService = [
-        { label: 'Thuê huấn luyện viên', value: '0' },
-        { label: 'Thuê giày', value: '1' },
-        { label: 'Thuê trọng tài', value: '2' },
-        { label: 'Thuê áo đấu', value: '3' },
-        { label: 'Không', value: '4' },
+        { label: 'Thuê huấn luyện viên', value: '0', price: 100000 },
+        { label: 'Thuê giày', value: '1', price: 50000 },
+        { label: 'Thuê trọng tài', value: '2', price: 200000 },
+        { label: 'Thuê áo đấu', value: '3', price: 50000 },
+        { label: 'Không', value: '4', price: 0 },
     ];
     const othersService = [
-        { label: 'Bình nước 20L', value: '0' },
-        { label: 'Revive', value: '1' },
-        { label: 'Pocari', value: '2' },
-        { label: 'Aquarius', value: '3' },
-        { label: 'Không', value: '4' },
+        { label: 'Bình nước 20L', value: '0', price: 50000 },
+        { label: 'Revive', value: '1', price: 10000 },
+        { label: 'Pocari', value: '2', price: 15000 },
+        { label: 'Aquarius', value: '3', price: 15000 },
+        { label: 'Không', value: '4', price: 0 },
     ];
     const [selectedType, setSelectedType] = useState<string>('4');
     const [othersType, setOthersType] = useState<string>('4');
@@ -86,6 +87,31 @@ export function ServiceAndPay() {
                             color="success"
                             sx={{ mt: 2, ml: 2, mb: 2 }}
                             startIcon={<PaymentIcon />}
+                            onClick={() => {
+                                const serviceTotal = typeService.find(t => t.value === selectedType)?.price || 0;
+                                const othersTotal = othersService.find(t => t.value === othersType)?.price || 0;
+                                const bill: Payment = {
+                                    id: (Math.random() + 1).toString(36).substring(16),
+                                    amount: serviceTotal + othersTotal,
+                                    description: `Dịch vụ: ${typeService.find(t => t.value === selectedType)?.label || 'Không'}; Nước: ${othersService.find(t => t.value === othersType)?.label || 'Không'}`,
+                                    date: new Date(),
+                                }
+                                fetch('/api/payment', {
+                                    method: 'POST',
+                                    body: JSON.stringify(bill),
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then((res) => {
+                                    if (res.ok) {
+                                        alert('Thanh toán thành công');
+                                    } else {
+                                        alert('Thanh toán thất bại ' + res.statusText);
+                                    }
+                                }).catch((error) => {
+                                    alert('Thanh toán thất bại: ' + error);
+                                })
+                            }}
                         >
                             Thanh Toán
                         </Button>
