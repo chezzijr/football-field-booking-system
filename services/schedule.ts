@@ -8,7 +8,7 @@ export default {
     
 
     addSchedule: async (sched: Schedule): Promise<Schedule> => {
-        const { id, start, end, customer, customerPhone, numberOfPeople, fieldType, typeCustomer, birthdate, address, gender, nation } = sched;
+        const { id, start, end, customer, customerPhone, fieldNo } = sched;
 
         if (!id) {
             throw new Error("schedule id is required for adding a new schedule");
@@ -30,11 +30,23 @@ export default {
             throw new Error("customer phone is required for adding a new schedule");
         }
 
+        const existingSchedules = await scheduleModel.readAll();
+        const overlappingSchedule = existingSchedules.find((existingSched) =>
+            existingSched.fieldNo === fieldNo &&
+            (
+                (new Date(start) < new Date(existingSched.end) && new Date(end) > new Date(existingSched.start))
+            )
+        );
+
+        if (overlappingSchedule) {
+            throw new Error(`schedule for fieldNo = ${fieldNo} overlaps with an existing schedule from ${overlappingSchedule.start} to ${overlappingSchedule.end}`);
+        }
+
         const existingSchedule = await scheduleModel.read(id);
         if (existingSchedule) {
             throw new Error(`schedule with id = ${id} is already existed`);
         }
-        
+
         const res = await scheduleModel.add(sched);
         if (!res) {
             throw new Error(`failed to add schedule with id = ${id}`);
