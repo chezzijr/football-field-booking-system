@@ -55,7 +55,7 @@ export function BookingTable() {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
 
     useEffect(() => {
-        fetch("/api/schedule", { method: 'GET', cache: 'reload' })
+        fetch("/api/schedule?currentWeek", { method: 'GET', cache: 'reload' })
             .then((response) => response.json())
             .then((schedules) => {
                 setSchedules(schedules);
@@ -115,21 +115,22 @@ export interface BookingList {
     nation: string;
 }
 
-export function BookingTableFull({ rows }: { rows: BookingList[] }, setSchedules: any) {
-
+export function BookingTableFull() {
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [rows, setRows] = useState<Schedule[]>([]);
+
+    useEffect(() => {
+        fetch("/api/schedule", { method: 'GET', cache: 'reload' })
+            .then((response) => response.json())
+            .then((schedules) => {
+                setRows(schedules);
+            })
+            .catch((error) => console.error('Error!!!:', error));
+    }, []);
 
     const filteredRows = rows.filter((row) => {
         return (
-            row.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.phone.includes(searchTerm) ||
-            row.birthdate.includes(searchTerm) ||
-            row.idNumber.includes(searchTerm) ||
-            row.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.gender.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.nation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.typeCustomer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.fieldType.toLowerCase().includes(searchTerm.toLowerCase())
+            row.customer.toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
 
@@ -155,43 +156,33 @@ export function BookingTableFull({ rows }: { rows: BookingList[] }, setSchedules
                     <TableRow>
                         <StyledTableCell>Tên khách hàng</StyledTableCell>
                         <StyledTableCell>SĐT</StyledTableCell>
-                        <StyledTableCell>Ngày sinh</StyledTableCell>
-                        <StyledTableCell>CCCD</StyledTableCell>
                         <StyledTableCell>Ngày giờ nhận sân</StyledTableCell>
                         <StyledTableCell>Ngày giờ trả sân</StyledTableCell>
                         <StyledTableCell>Địa chỉ</StyledTableCell>
-                        <StyledTableCell>Giới tính</StyledTableCell>
-                        <StyledTableCell>Quốc tịch</StyledTableCell>
-                        <StyledTableCell>Số lượng người tham gia</StyledTableCell>
-                        <StyledTableCell>Loại khách hàng</StyledTableCell>
-                        <StyledTableCell>Loại sân</StyledTableCell>
-                        {/* <StyledTableCell>Xóa</StyledTableCell> */}
+                        <StyledTableCell>Xóa</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {filteredRows.map((row, index) => (
                         <StyledTableRow key={index}>
-                            <TableCell>{row.fullName}</TableCell>
-                            <TableCell>{row.phone}</TableCell>
-                            <TableCell>{row.birthdate}</TableCell>
-                            <TableCell>{row.idNumber}</TableCell>
-                            <TableCell>{row.timeStart}</TableCell>
-                            <TableCell>{row.timeEnd}</TableCell>
-                            <TableCell>{row.address}</TableCell>
-                            <TableCell>{row.gender}</TableCell>
-                            <TableCell>{row.nation}</TableCell>
-                            <TableCell>{row.numberOfPeople}</TableCell>
-                            <TableCell>{row.typeCustomer}</TableCell>
-                            <TableCell>{row.fieldType}</TableCell>
-                            {/* <TableCell> */}
-                            {/*     <button onClick={() => { */}
-                            {/*         fetch(`/api/schedule?id=${row.idNumber}`, { */}
-                            {/*             method: 'DELETE' */}
-                            {/*         }).then((response) => { */}
-                            {/*             // ... */}
-                            {/*         }).catch((err) => alert('Error!!!: ' + err)); */}
-                            {/*     }}><DeleteForeverIcon /></button> */}
-                            {/* </TableCell> */}
+                            <TableCell>{row.customer}</TableCell>
+                            <TableCell>{row.customerPhone}</TableCell>
+                            <TableCell>{new Date(row.start).toLocaleString("vi-VN")}</TableCell>
+                            <TableCell>{new Date(row.end).toLocaleString("vi-VN")}</TableCell>
+                            <TableCell>{row.fieldNo}</TableCell>
+                            <TableCell>
+                                <button onClick={() => {
+                                    fetch(`/api/schedule?id=${row.id}`, {
+                                        method: 'DELETE'
+                                    }).then((response) => {
+                                        if (response.ok) {
+                                            setRows(rows.filter(s => s.id !== row.id));
+                                        } else {
+                                            alert('Error!!!: ' + response.statusText);
+                                        }
+                                    }).catch((err) => alert('Error!!!: ' + err));
+                                }}><DeleteForeverIcon /></button>
+                            </TableCell>
                         </StyledTableRow>
                     ))}
                 </TableBody>
