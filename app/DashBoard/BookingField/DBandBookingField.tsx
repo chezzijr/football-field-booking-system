@@ -4,7 +4,6 @@ import { Box, TextField, Divider, Checkbox } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import SearchIcon from '@mui/icons-material/Search';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import type { Navigation, Router } from '@toolpad/core';
@@ -15,9 +14,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Grid from '@mui/material/Grid2';
 import { styled } from '@mui/material/styles';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
@@ -26,7 +22,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { ServiceAndPay } from '../ServiceAndPay/ServiceAndPay';
 import { UpdateInformation } from '../Data/UpdateInfo';
-
+import {Typography} from '@mui/material';
+import ball from './BookingField/ball.png';
+import Image from 'next/image';
 
 const NAVIGATION: Navigation = [
     {
@@ -257,33 +255,6 @@ const BasicDateTimeInput: React.FC<BasicDateTimeInputProps> = ({ label, value, o
 };
 
 
-type BasicDatePickerProps = {
-    label: string;
-    selectedDate: Dayjs | null;
-    onDateChange: (value: Dayjs | null) => void;
-};
-
-function BasicDatePicker({ label, selectedDate, onDateChange }: BasicDatePickerProps) {
-    const handleDateChange = (newDate: Dayjs | null) => {
-        onDateChange(newDate);
-    };
-    return (
-        <Box sx={{ padding: '0.5rem 1rem', maxWidth: '35ch' }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
-                    <DatePicker label={label} slotProps={{
-                        textField: {
-                            size: 'small',
-                        },
-                    }}
-                        value={selectedDate}
-                        onChange={handleDateChange} />
-                </DemoContainer>
-            </LocalizationProvider>
-        </Box>
-    );
-}
-
 //  Dat san ----------------------------------------------------------------------------------------------------------------------------------------------------
 export interface Schedule {
     id: string;
@@ -375,32 +346,27 @@ function RegisterInfo() {
 
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{}}>
-                <Grid container spacing={2} columns={14}>
+            <Box sx={{ flexGrow: 1 }}>
+                <Grid container spacing={2} sx={{ px: 2 }}>
 
-                    <Grid size={{ xs: 13.7, md: 4 }} >
+                    <Grid size={{ xs: 12, md: 3.5 }} >
 
                         <Grid
                             sx={{
                                 backgroundColor: 'white',
                                 borderRadius: 4,
-                                mt: 1,
-                                ml: 2,
+                                // mt: 1,
+                                // ml: 2,
                                 boxShadow: 15,
-                                pb: 1,
-                                '&:hover': {
-                                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
-                                    transform: 'scale(1.02)',
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                },
+                                // pb: 1,
+                                // '&:hover': {
+                                //     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+                                //     transform: 'scale(1.02)',
+                                //     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                // },
                             }}>
                             <StyledH3 sx={{ pt: '1rem' }}>Thông tin đăng ký</StyledH3>
-                            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
-                            <BasicTextFields
-                                label="Số lượng người tham gia"
-                                inputValue={inputValue.numberOfPeople}
-                                onInputChange={(e) => setInputValue({})}
-                            />
+                            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '70%' }} />
                             <BasicDateTimeInput
                                 label="Ngày giờ nhận sân"
                                 value={schedule.start}
@@ -417,83 +383,67 @@ function RegisterInfo() {
                             sx={{
                                 backgroundColor: 'white',
                                 borderRadius: 4,
-                                mt: 1,
-                                ml: 2,
                                 boxShadow: 15,
-                                pb: 1,
-                                '&:hover': {
-                                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                    transform: 'scale(1.02)', // Slightly scale up on hover
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                                },
                             }}>
-                            <StyledH3 sx={{ pt: '1rem' }}>Tìm kiếm khách hàng</StyledH3>
-                            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                            }}>
-                                <Box sx={{ minWidth: 120, m: '0.5rem 1rem' }}>
-                                    <TextField id="outlined-basic" label="Họ tên" variant="outlined" size='small' />
-                                </Box>
-                                <Button variant='contained'>
-                                    <SearchIcon />
-                                </Button>
-                            </Box>
+                            <StyledH3 sx={{ pt: '1rem' }}>Thông tin loại sân</StyledH3>
+                            <Divider sx={{ mb: 2, height: '2.5px', backgroundColor: '#a8a9aa', width: '70%' }} />
+                            <FieldSelect label='Chọn sân' value={fieldNo} selection={FieldType} onChange={setFieldNo} />
                         </Grid>
 
                         <Grid
                             sx={{
                                 backgroundColor: 'white',
                                 borderRadius: 4,
-                                mt: 1,
                                 mb: 2,
-                                ml: 2,
+                                // mt: 1,
+                                // ml: 2,
                                 boxShadow: 15,
-                                pb: 1,
-                                '&:hover': {
-                                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                    transform: 'scale(1.02)', // Slightly scale up on hover
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                                },
+                                // pb: 1,
                             }}>
-                            <StyledH3 sx={{ pt: '1rem' }}>Thông tin loại sân</StyledH3>
-                            <Divider sx={{ mb: 2, height: '2.5px', backgroundColor: '#a8a9aa' }} />
-                            <FieldSelect label='Chọn sân' value={fieldNo} selection={FieldType} onChange={setFieldNo} />
-                            <Box sx={{ padding: '1rem' }}>
-                                <Button variant="contained" onClick={handleSubmit}>
-                                    Đặt
-                                </Button>
+                            <StyledH3 sx={{ pt: '1rem' }}>Cập nhật sân</StyledH3>
+                            <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '70%' }} />
+                            <Box sx={{
+                                // display: 'flex',
+                                // alignItems: 'center',
+                            }}>
+                                <BasicTextFields
+                                    label="Mã số sân"
+                                    inputValue={inputValue.idNumber}
+                                    onInputChange={(e) => setInputValue({})}
+                                />
+                                <BasicTextFields
+                                    label="Loại sân"
+                                    inputValue={inputValue.idNumber}
+                                    onInputChange={(e) => setInputValue({})}
+                                />
+                                <Box sx={{ padding: '1rem' }}>
+                                    <Button variant="contained" >
+                                        Thêm
+                                    </Button>
+                                </Box>
                             </Box>
                         </Grid>
+
 
                     </Grid>
 
                     <Grid
-                        size={{ xs: 13.4, md: 4 }}
+                        size={{ xs: 12, md: 3.5 }}
                         sx={{
                             backgroundColor: 'white',
                             borderRadius: 4,
                             mt: 2,
                             mb: 2,
-                            ml: 2,
                             boxShadow: 15,
-                            // maxHeight: '800px',
-                            '&:hover': {
-                                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                transform: 'scale(1.02)', // Slightly scale up on hover
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                            },
                         }}
                     >
                         <StyledH3>Thông tin khách hàng</StyledH3>
-                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
+                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '70%' }} />
                         <BasicTextFields
                             label="Họ tên"
                             inputValue={schedule.customer}
                             onInputChange={(e) => setSchedule({ ...schedule, customer: e.target.value })}
                         />
-                        {/* <BasicSelect title="Loại khách hàng" selection={typeCustomer} value={selectedType.customerType} onChange={(value) => handleSelectChange('customerType', value)} /> */}
                         <BasicTextFields
                             label="Số điện thoại"
                             inputValue={schedule.customerPhone}
@@ -504,7 +454,11 @@ function RegisterInfo() {
                             inputValue={schedule.id}
                             onInputChange={(e) => setSchedule({ ...schedule, id: e.target.value })}
                         />
-                        <BasicDatePicker label='Ngày sinh' selectedDate={selectedDate} onDateChange={handleDateChange} />
+                        <BasicDateTimeInput
+                            label="Ngày sinh"
+                            value={inputValue.id}
+                            onChange={(e) => setInputValue({})}
+                        />
                         <BasicTextFields
                             label="Địa chỉ"
                             inputValue={inputValue.address}
@@ -525,25 +479,23 @@ function RegisterInfo() {
                             <FormControlLabel
                                 control={<Checkbox checked={paid} onChange={(e) => setPaid(e.target.checked)} />} label="Đã thanh toán" />
                         </Box>
+                        <Box sx={{ padding: '1rem' }}>
+                            <Button variant="contained" onClick={handleSubmit}>
+                                Đặt
+                            </Button>
+                        </Box>
                     </Grid>
 
                     <Grid
-                        size={{ xs: 13.4, md: 5.5 }}
+                        size={{ xs: 12, md: 5 }}
                         sx={{
                             backgroundColor: 'white',
                             borderRadius: 4,
-                            mt: 2,
-                            ml: 2,
-                            mb: 2,
+                            mt: 2, mb: 2,
                             boxShadow: 15,
-                            '&:hover': {
-                                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                transform: 'scale(1.02)', // Slightly scale up on hover
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                            },
                         }}>
                         <StyledH3>Danh sách đặt sân trong ngày</StyledH3>
-                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
+                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '70%' }} />
                         <Box sx={{ m: 2 }}>
                             {error && <p style={{ color: 'red' }}>{error}</p>}
                             {success && <p style={{ color: 'green' }}>{success}</p>}
@@ -557,6 +509,79 @@ function RegisterInfo() {
         </ThemeProvider>
     );
 }
+
+const TitleComponent: React.FC = () => {
+    return (
+        <Box 
+            display="flex" 
+            flexDirection="column" 
+            justifyContent="center" 
+            alignItems="center" 
+            height="90vh" 
+            textAlign="center" 
+            position="relative"
+        >
+            <Box 
+                sx={{
+                    position: 'relative',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+                    padding: '4rem', 
+                    borderRadius: '10px', 
+                    overflow: 'hidden', 
+                }}
+            >
+                <Typography variant="h2" sx={{ fontSize: '100px', fontWeight: 'bold', color: 'white' }}>
+                    QUẢN LÝ ĐẶT SÂN
+                </Typography>
+                <Typography variant="h2" sx={{ fontSize: '100px', fontWeight: 'bold', color: 'white' }}>
+                    BÓNG ĐÁ
+                </Typography>
+                <Box
+                    component="img"
+                    src="https://png.pngtree.com/png-clipart/20220403/original/pngtree-soccer-ball-white-and-black-png-image_7494420.png"
+                    alt="Soccer Ball"
+                    sx={{
+                        position: 'absolute',
+                        width: '60px', 
+                        animation: 'rollAround 10s linear infinite', 
+                    }}
+                />
+            </Box>
+
+            <style jsx>{`
+                @keyframes rollAround {
+                    0% {
+                        top: 0;
+                        left: 0;
+                        transform: rotate(0deg);
+                    }
+                    25% {
+                        top: 0;
+                        left: calc(100% - 60px); /* Di chuyển sang phải */
+                        transform: rotate(90deg);
+                    }
+                    50% {
+                        top: calc(100% - 60px); /* Di chuyển xuống dưới */
+                        left: calc(100% - 60px);
+                        transform: rotate(180deg);
+                    }
+                    75% {
+                        top: calc(100% - 60px);
+                        left: 0;
+                        transform: rotate(270deg);
+                    }
+                    100% {
+                        top: 0;
+                        left: 0;
+                        transform: rotate(360deg);
+                    }
+                }
+            `}</style>
+        </Box>
+    );
+};
+
+
 export default function DashboardLayoutSlots(props: DemoProps) {
     const { window } = props;
 
@@ -594,6 +619,7 @@ export default function DashboardLayoutSlots(props: DemoProps) {
             >
                 <DashboardLayout slots={{}}>
                     <DemoPageContent pathname={pathname} />
+                    {pathname === '/' ? <TitleComponent /> : <DemoPageContent pathname={pathname} />}
                     {pathname === '/dashboard' ? <RegisterInfo /> : <DemoPageContent pathname={pathname} />}
                     {pathname === '/orders' ? <ServiceAndPay /> : <DemoPageContent pathname={pathname} />}
                     {pathname === '/info' ? <UpdateInformation /> : <DemoPageContent pathname={pathname} />}

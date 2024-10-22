@@ -15,10 +15,10 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
+import { TextField, Button } from '@mui/material';
 import { InputAdornment } from '@mui/material';
 import { Schedule, adding } from './DBandBookingField';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const FieldType = [
     { label: 'Sân', value: '0' },
@@ -53,66 +53,98 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export function BookingTable() {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
+    const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
+    // Fetch schedules on component mount
     useEffect(() => {
         fetch("/api/schedule?currentWeek", { method: 'GET', cache: 'reload' })
             .then((response) => response.json() as any as Schedule[])
             .then((schedules) => {
-                setSchedules(schedules.filter(s => new Date(s.start).getDate() === new Date().getDate()));
+                const filteredToday = schedules.filter(s => new Date(s.start).getDate() === new Date().getDate());
+                setSchedules(filteredToday);
+                setFilteredSchedules(filteredToday);
             })
             .catch((error) => console.error('Error!!!:', error));
-    }, [adding]);
-    return (
-        <TableContainer component={Paper} sx={{ mt: 2, borderRadius: '0.5rem', overflow: 'hidden' }}>
-            <Table size='small' aria-label="booking table">
-                <TableHead>
-                    <TableRow>
-                        <StyledTableCell>Tên khách hàng</StyledTableCell>
-                        <StyledTableCell>Ngày giờ nhận sân</StyledTableCell>
-                        <StyledTableCell>Loại sân</StyledTableCell>
-                        <StyledTableCell>Xóa</StyledTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {schedules.map((schedule, index) => (
-                        <StyledTableRow key={index}>
-                            <TableCell>{schedule.customer}</TableCell>
-                            <TableCell>{new Date(schedule.start).toLocaleString("vi-VN")}</TableCell>
-                            <TableCell>{FieldType.find(f => Number(f.value) === schedule.fieldNo)?.label || 'Unknown Field'}</TableCell>
-                            <TableCell>
-                                <button onClick={() => {
-                                    fetch(`/api/schedule?id=${schedule.id}`, {
-                                        method: 'DELETE'
-                                    }).then((response) => {
-                                        if (response.ok) {
-                                            setSchedules(schedules.filter(s => s.id !== schedule.id));
-                                        } else {
-                                            alert('Error!!!: ' + response.statusText);
-                                        }
-                                    }).catch((err) => alert('Error!!!: ' + err));
-                                }}><DeleteForeverIcon /></button>
-                            </TableCell>
-                        </StyledTableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
-}
+    }, []);
 
-export interface BookingList {
-    fullName: string;
-    timeStart: string;
-    timeEnd: string;
-    numberOfPeople: number;
-    fieldType: string;
-    idNumber: string;
-    typeCustomer: string;
-    phone: string;
-    birthdate: string;
-    address: string;
-    gender: string;
-    nation: string;
+    const handleSearch = () => {
+        const filtered = schedules.filter(schedule =>
+            schedule.customer.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredSchedules(filtered);
+    };
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearch(); 
+        }
+    };
+
+    return (
+        <Box>
+            <Box sx={{ display: 'flex', mb: 2, gap: '1rem' }}>
+                <TextField
+                    placeholder="Tìm kiếm khách hàng"
+                    variant="outlined"
+                    size="small"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearch}
+                >
+                    <SearchIcon/>
+                </Button>
+            </Box>
+
+            <TableContainer
+                component={Paper}
+                sx={{ 
+                    mt: 2, 
+                    borderRadius: '0.5rem', 
+                    overflowY: 'auto', 
+                    maxHeight: 440, 
+                }}
+            >
+                <Table size='small' aria-label="booking table" stickyHeader>
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>Tên khách hàng</StyledTableCell>
+                            <StyledTableCell>Ngày giờ nhận sân</StyledTableCell>
+                            <StyledTableCell>Loại sân</StyledTableCell>
+                            <StyledTableCell>Xóa</StyledTableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {filteredSchedules.map((schedule, index) => (
+                            <StyledTableRow key={index}>
+                                <TableCell>{schedule.customer}</TableCell>
+                                <TableCell>{new Date(schedule.start).toLocaleString("vi-VN")}</TableCell>
+                                <TableCell>{FieldType.find(f => Number(f.value) === schedule.fieldNo)?.label || 'Unknown Field'}</TableCell>
+                                <TableCell>
+                                    <button onClick={() => {
+                                        fetch(`/api/schedule?id=${schedule.id}`, {
+                                            method: 'DELETE'
+                                        }).then((response) => {
+                                            if (response.ok) {
+                                                setSchedules(schedules.filter(s => s.id !== schedule.id));
+                                                setFilteredSchedules(filteredSchedules.filter(s => s.id !== schedule.id));
+                                            } else {
+                                                alert('Error!!!: ' + response.statusText);
+                                            }
+                                        }).catch((err) => alert('Error!!!: ' + err));
+                                    }}><DeleteForeverIcon /></button>
+                                </TableCell>
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Box>
+    );
 }
 
 export function BookingTableFull() {
@@ -158,7 +190,7 @@ export function BookingTableFull() {
                         <StyledTableCell>SĐT</StyledTableCell>
                         <StyledTableCell>Ngày giờ nhận sân</StyledTableCell>
                         <StyledTableCell>Ngày giờ trả sân</StyledTableCell>
-                        <StyledTableCell>Địa chỉ</StyledTableCell>
+                        <StyledTableCell>Loại sân</StyledTableCell>
                         <StyledTableCell>Xóa</StyledTableCell>
                     </TableRow>
                 </TableHead>
@@ -169,7 +201,7 @@ export function BookingTableFull() {
                             <TableCell>{row.customerPhone}</TableCell>
                             <TableCell>{new Date(row.start).toLocaleString("vi-VN")}</TableCell>
                             <TableCell>{new Date(row.end).toLocaleString("vi-VN")}</TableCell>
-                            <TableCell>{row.fieldNo}</TableCell>
+                            <TableCell>{FieldType.find(f => Number(f.value) === row.fieldNo)?.label || 'Unknown Field'}</TableCell>
                             <TableCell>
                                 <button onClick={() => {
                                     fetch(`/api/schedule?id=${row.id}`, {

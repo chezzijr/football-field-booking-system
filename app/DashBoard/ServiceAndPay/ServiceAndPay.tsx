@@ -1,42 +1,58 @@
 import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
+import { TextField } from '@mui/material';
 import Divider from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import {PaymentHistory} from './Transaction';
+import { PaymentHistory } from './Transaction';
 import { StyledH3, theme, BasicSelect } from '../BookingField/DBandBookingField';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Payment } from '@/types/payment';
+import Grid from '@mui/material/Grid2';
 
-const QuantitySelector: React.FC = () => {
+
+interface QuantitySelectorProps {
+    onQuantityChange: (quantity: number) => void;  // Callback để truyền giá trị số lượng lên parent
+}
+
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({ onQuantityChange }) => {
     const [quantity, setQuantity] = useState<number>(1);
 
     const handleIncrease = () => {
-        setQuantity(prevQuantity => prevQuantity + 1);
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        onQuantityChange(newQuantity);
     };
 
     const handleDecrease = () => {
         if (quantity > 0) {
-            setQuantity(prevQuantity => prevQuantity - 1);
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            onQuantityChange(newQuantity);
         }
+    };
+
+    const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newQuantity = Math.max(0, Number(event.target.value));  // Giữ giá trị không âm
+        setQuantity(newQuantity);
+        onQuantityChange(newQuantity);
     };
 
     return (
         <Box display="flex" alignItems="center" sx={{ pl: '1rem', pr: '1rem' }}>
-            <Button variant="contained" color="primary" size='small' onClick={handleDecrease} sx={{ minWidth: '40px' }}>
-                <RemoveIcon />
-            </Button>
-            <Typography sx={{ mx: 2, minWidth: '20px', textAlign: 'center' }}>
-                {quantity}
-            </Typography>
-            <Button variant="contained" color="primary" size='small' onClick={handleIncrease} sx={{ minWidth: '40px' }}>
-                <AddIcon />
-            </Button>
+            <Typography sx={{ mr: 2 }}>Số lượng nước:</Typography>
+            <TextField
+                value={quantity}
+                onChange={handleQuantityChange}
+                type="number"
+                inputProps={{ min: 0 }}  // Không cho phép số âm
+                sx={{ width: '60px', mx: 2, textAlign: 'center' }}
+                size="small"
+            />
         </Box>
     );
 };
@@ -58,31 +74,32 @@ export function ServiceAndPay() {
     ];
     const [selectedType, setSelectedType] = useState<string>('4');
     const [othersType, setOthersType] = useState<string>('4');
+    const [quantity, setQuantity] = useState<number>(1);  
+
+    const handleQuantityChange = (newQuantity: number) => {
+        setQuantity(newQuantity);  
+    };
     return (
-        <Box>
+        <Box sx={{ flexGrow: 1 }}>
 
             <ThemeProvider theme={theme}>
-                <Grid container spacing={1} columns={12.67}  >
+                <Grid container spacing={2} sx={{ px: 2 }}>
                     <Grid size={{ xs: 12, md: 6 }}
                         sx={{
                             backgroundColor: 'white',
                             borderRadius: 4,
                             boxShadow: 3,
-                            ml: 2, mb: 1, mt: 2, mr: 2,
-                            '&:hover': {
-                                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                transform: 'scale(1.02)', // Slightly scale up on hover
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                            },
+                            mb: 2, mt: 2,
                         }}>
                         <StyledH3>Danh sách dịch vụ</StyledH3>
-                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa' }} />
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', pb: '1rem' }}>
+                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa',width: '40%', }} />
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', }}>
                             <BasicSelect title='Loại dịch vụ' selection={typeService} value={selectedType} onChange={setSelectedType} />
                             <BasicSelect title='Nước uống' selection={othersService} value={othersType} onChange={setOthersType} />
-                            <QuantitySelector />
-                            <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0)}</StyledH3>
+                            {/* <QuantitySelector /> */}
                         </Box>
+                        <QuantitySelector onQuantityChange={handleQuantityChange} />
+                        <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0)*quantity}</StyledH3>
                         <Button
                             variant="contained"
                             color="success"
@@ -124,16 +141,13 @@ export function ServiceAndPay() {
                             backgroundColor: 'white',
                             borderRadius: 4,
                             boxShadow: 3,
-                            mr: 2, mb: 1, ml: 2, mt: 2,
-                            '&:hover': {
-                                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Shadow on hover
-                                transform: 'scale(1.02)', // Slightly scale up on hover
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Transition effect
-                            },
+                            mb: 2, mt: 2,
                         }}>
                         <StyledH3>Lịch sử giao dịch</StyledH3>
-                        <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa' }} />
-                        <PaymentHistory/>
+                        <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa',width: '40%', }} />
+                        <Box sx={{ maxHeight: '526px', overflowY: 'auto', padding:2, }}>
+                            <PaymentHistory />
+                        </Box>
                     </Grid>
 
                 </Grid>
