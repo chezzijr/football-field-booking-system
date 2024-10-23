@@ -22,6 +22,7 @@
     "dayjs": "^1.11.13",
     "mongodb": "^6.9.0",
     "next": "^14.2.14",
+    "nextjs": "^0.0.3",
     "react": "^18",
     "react-dom": "^18",
     "styled-components": "^6.1.13",
