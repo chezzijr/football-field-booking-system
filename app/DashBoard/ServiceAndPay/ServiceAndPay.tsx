@@ -8,33 +8,21 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { PaymentHistory } from './Transaction';
+import { PaymentHistory, TransactionChart } from './Transaction';
 import { StyledH3, theme, BasicSelect } from '../BookingField/DBandBookingField';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Payment } from '@/types/payment';
 import Grid from '@mui/material/Grid2';
 
-
+export var check = false;
 interface QuantitySelectorProps {
     onQuantityChange: (quantity: number) => void;  // Callback để truyền giá trị số lượng lên parent
+    label: string;
 }
 
-const QuantitySelector: React.FC<QuantitySelectorProps> = ({ onQuantityChange }) => {
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({ onQuantityChange, label }) => {
     const [quantity, setQuantity] = useState<number>(1);
 
-    const handleIncrease = () => {
-        const newQuantity = quantity + 1;
-        setQuantity(newQuantity);
-        onQuantityChange(newQuantity);
-    };
-
-    const handleDecrease = () => {
-        if (quantity > 0) {
-            const newQuantity = quantity - 1;
-            setQuantity(newQuantity);
-            onQuantityChange(newQuantity);
-        }
-    };
 
     const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newQuantity = Math.max(0, Number(event.target.value));  // Giữ giá trị không âm
@@ -44,7 +32,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ onQuantityChange })
 
     return (
         <Box display="flex" alignItems="center" sx={{ pl: '1rem', pr: '1rem' }}>
-            <Typography sx={{ mr: 2 }}>Số lượng nước:</Typography>
+            <Typography sx={{ mr: 2 }}>{label}</Typography>
             <TextField
                 value={quantity}
                 onChange={handleQuantityChange}
@@ -74,10 +62,14 @@ export function ServiceAndPay() {
     ];
     const [selectedType, setSelectedType] = useState<string>('4');
     const [othersType, setOthersType] = useState<string>('4');
-    const [quantity, setQuantity] = useState<number>(1);  
+    const [quantity, setQuantity] = useState<number>(1);
+    const [quantity2, setQuantity2] = useState<number>(1);
 
     const handleQuantityChange = (newQuantity: number) => {
-        setQuantity(newQuantity);  
+        setQuantity(newQuantity);
+    };
+    const handleQuantityChange2 = (newQuantity: number) => {
+        setQuantity2(newQuantity);
     };
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -92,14 +84,22 @@ export function ServiceAndPay() {
                             mb: 2, mt: 2,
                         }}>
                         <StyledH3>Danh sách dịch vụ</StyledH3>
-                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa',width: '40%', }} />
+                        <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '40%', }} />
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', }}>
                             <BasicSelect title='Loại dịch vụ' selection={typeService} value={selectedType} onChange={setSelectedType} />
                             <BasicSelect title='Nước uống' selection={othersService} value={othersType} onChange={setOthersType} />
                             {/* <QuantitySelector /> */}
                         </Box>
-                        <QuantitySelector onQuantityChange={handleQuantityChange} />
-                        <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0)*quantity}</StyledH3>
+                        <Box sx={{
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            gap: 2, 
+                        }}>
+                            <QuantitySelector onQuantityChange={handleQuantityChange} label='Số lượng dịch vụ: ' />
+                            <QuantitySelector onQuantityChange={handleQuantityChange} label='Số lượng nước: ' />
+                        </Box>
+                        <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0) * quantity}</StyledH3>
                         <Button
                             variant="contained"
                             color="success"
@@ -124,6 +124,7 @@ export function ServiceAndPay() {
                                 }).then((res) => {
                                     if (res.ok) {
                                         alert('Thanh toán thành công');
+                                        check = !check;
                                     } else {
                                         alert('Thanh toán thất bại ' + res.statusText);
                                     }
@@ -134,6 +135,9 @@ export function ServiceAndPay() {
                         >
                             Thanh Toán
                         </Button>
+                        <Box sx={{ ml: 3 }}>
+                            <TransactionChart />
+                        </Box>
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 6 }}
@@ -144,8 +148,8 @@ export function ServiceAndPay() {
                             mb: 2, mt: 2,
                         }}>
                         <StyledH3>Lịch sử giao dịch</StyledH3>
-                        <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa',width: '40%', }} />
-                        <Box sx={{ maxHeight: '526px', overflowY: 'auto', padding:2, }}>
+                        <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa', width: '40%', }} />
+                        <Box sx={{ maxHeight: '526px', overflowY: 'auto', padding: 2, }}>
                             <PaymentHistory />
                         </Box>
                     </Grid>

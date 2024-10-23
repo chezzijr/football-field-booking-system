@@ -3,7 +3,8 @@ import { Box, TextField, Button, Grid, Typography, Table, TableBody, TableCell, 
 import { Payment } from '@/types/payment';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
-
+import { check } from './ServiceAndPay';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 export function PaymentHistory() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -23,10 +24,10 @@ export function PaymentHistory() {
       .catch((err) => {
         setError(err.message);
       });
-  }, []);
+  }, [check]);
   return (
-    <Box sx={{ padding: '1rem', backgroundColor: '#f5f5f5', mb:4 }}>
-      <div style={{ padding: '20px' }}>                                                           
+    <Box sx={{ padding: '1rem', backgroundColor: '#f5f5f5', mb: 4 }}>
+      <div style={{ padding: '20px' }}>
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         <div>
@@ -55,33 +56,80 @@ export function PaymentHistory() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   billContainer: {
-      border: '1px solid #ccc',
-      borderRadius: '8px',
-      padding: '20px',
-      marginBottom: '20px',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      maxWidth: '400px',
-      backgroundColor: '#f9f9f9',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '20px',
+    marginBottom: '20px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    maxWidth: '400px',
+    backgroundColor: '#f9f9f9',
   },
   billHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      borderBottom: '1px solid #eee',
-      paddingBottom: '10px',
-      marginBottom: '10px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderBottom: '1px solid #eee',
+    paddingBottom: '10px',
+    marginBottom: '10px',
   },
   billDate: {
-      fontSize: '0.9rem',
-      color: '#888',
+    fontSize: '0.9rem',
+    color: '#888',
   },
   billBody: {
-      fontSize: '1rem',
-      lineHeight: '1.6',
+    fontSize: '1rem',
+    lineHeight: '1.6',
   },
   billFooter: {
-      borderTop: '1px solid #eee',
-      paddingTop: '10px',
-      marginTop: '10px',
-      textAlign: 'center', 
+    borderTop: '1px solid #eee',
+    paddingTop: '10px',
+    marginTop: '10px',
+    textAlign: 'center',
   },
 };
+export function TransactionChart() {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/payment", { method: 'GET', cache: 'reload' })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: Payment[]) => {
+        setPayments(data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [check]);
+  const chartData = payments.map(payment => ({
+    x: new Date(payment.date).getTime(), 
+    y: payment.amount, 
+  }));
+  return (
+    <LineChart
+      xAxis={[{
+        data: chartData.map(d => d.x), 
+        scaleType: 'time', 
+        label: 'Ngày',
+        valueFormatter: (value: number) => new Date(value).toLocaleDateString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+        }), 
+      }]}
+      yAxis={[
+        {
+          tickSize: 3,
+        }
+      ]}
+      series={[
+        {
+          data: chartData.map(d => d.y), 
+          label: 'Doanh thu',
+        },
+      ]}
+      width={500}
+      height={300}
+    />
+  );
+}

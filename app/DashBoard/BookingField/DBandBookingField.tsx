@@ -321,19 +321,19 @@ function RegisterInfo() {
             setError(error.message);
         }
     };
-    const [currentIndex, setCurrentIndex] = useState(0); 
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) =>
                 prevIndex === fieldImages.length - 1 ? 0 : prevIndex + 1
             );
-        }, 2000); 
+        }, 2000);
 
-        return () => clearInterval(interval); 
+        return () => clearInterval(interval);
     }, []);
     const fieldImages = [
-        'https://assets2.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/A3D090E5C87B4240BC03138FEC718B84/1.jpg', 
+        'https://assets2.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/A3D090E5C87B4240BC03138FEC718B84/1.jpg',
         'https://i.pinimg.com/736x/f5/9a/2c/f59a2cc5e8b8f13d348f757263a5f4c1.jpg',
         'https://sportsvenuecalculator.com/wp-content/uploads/2023/09/4-3.jpg',
         'https://www.xgrass.com/cmss_files/imagelibrary/sub-openplay-field.jpg'
@@ -371,7 +371,6 @@ function RegisterInfo() {
                                 value={schedule.end}
                                 onChange={(e) => {
                                     setSchedule({ ...schedule, end: e.target.value });
-                                    setDuration((new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 60000);
                                 }}
                             />
                         </Grid>
@@ -402,9 +401,9 @@ function RegisterInfo() {
 
                             <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem' }}>
                                 <img
-                                    src={fieldImages[currentIndex]} 
+                                    src={fieldImages[currentIndex]}
                                     alt={`Field ${currentIndex + 1}`}
-                                    style={{ width: '100%', maxWidth: '600px', height:'170px'}} 
+                                    style={{ width: '100%', maxWidth: '600px', height: '170px' }}
                                 />
                             </div>
                         </Grid>
@@ -427,7 +426,10 @@ function RegisterInfo() {
                         <BasicTextFields
                             label="Họ tên"
                             inputValue={schedule.customer}
-                            onInputChange={(e) => setSchedule({ ...schedule, customer: e.target.value })}
+                            onInputChange={(e) => {
+                                setSchedule({ ...schedule, customer: e.target.value });
+                                setDuration((new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 60000);
+                            }}
                         />
                         <BasicTextFields
                             label="Số điện thoại"
@@ -464,15 +466,6 @@ function RegisterInfo() {
                                     },
                                 }}
                             />
-                            {/* <TextField
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                type='number'
-                                id="outlined-basic" label="Duration" variant="outlined" size='small'
-                                value={duration}
-                                onChange={(e) => setDuration(Number(e.target.value))}
-                            /> */}
                         </Box>
                         <Box sx={{ m: '0.5rem 1rem' }}>
                             <FormControlLabel
@@ -511,80 +504,117 @@ function RegisterInfo() {
 
 const TitleComponent: React.FC = () => {
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            height="90vh"
-            textAlign="center"
-            position="relative"
-        >
+        <Box sx={{ padding: 0, margin: 0 }}>
+          {/* Header section */}
+          <Box
+            sx={{
+              backgroundImage: 'url(https://png.pngtree.com/background/20230412/original/pngtree-football-stadium-close-up-photography-advertising-background-picture-image_2402018.jpg)', // Replace with your actual image
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              height: '500px',
+              position: 'relative',
+            }}
+          >
             <Box
-                sx={{
-                    position: 'relative',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    padding: '4rem',
-                    borderRadius: '10px',
-                    overflow: 'hidden',
-                }}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: 'white',
+                textAlign: 'center',
+                flexDirection: 'column',
+              }}
             >
-                <Typography variant="h2" sx={{ fontSize: '100px', fontWeight: 'bold', color: 'white' }}>
-                    QUẢN LÝ ĐẶT SÂN
-                </Typography>
-                <Typography variant="h2" sx={{ fontSize: '100px', fontWeight: 'bold', color: 'white' }}>
-                    BÓNG ĐÁ
-                </Typography>
-                <Box
-                    component="img"
-                    src="https://png.pngtree.com/png-clipart/20220403/original/pngtree-soccer-ball-white-and-black-png-image_7494420.png"
-                    alt="Soccer Ball"
-                    sx={{
-                        position: 'absolute',
-                        width: '60px',
-                        animation: 'rollAround 10s linear infinite',
-                    }}
-                />
+              <Typography variant="h2" sx={{ fontWeight: 'bold' }}>
+                QUẢN LÝ
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>
+                ĐẶT SÂN BÓNG ĐÁ
+              </Typography>
+              <Typography variant="body1" sx={{ maxWidth: '600px', marginBottom: '20px' }}>
+                Tiện lợi, dễ dàng sử dụng, thống kê lịch đặt mỗi ngày. Quản lý tất cả những dịch vụ trên sân
+              </Typography>
             </Box>
-
-            <style jsx>{`
-                @keyframes rollAround {
-                    0% {
-                        top: 0;
-                        left: 0;
-                        transform: rotate(0deg);
-                    }
-                    25% {
-                        top: 0;
-                        left: calc(100% - 60px); /* Di chuyển sang phải */
-                        transform: rotate(90deg);
-                    }
-                    50% {
-                        top: calc(100% - 60px); /* Di chuyển xuống dưới */
-                        left: calc(100% - 60px);
-                        transform: rotate(180deg);
-                    }
-                    75% {
-                        top: calc(100% - 60px);
-                        left: 0;
-                        transform: rotate(270deg);
-                    }
-                    100% {
-                        top: 0;
-                        left: 0;
-                        transform: rotate(360deg);
-                    }
-                }
-            `}</style>
+          </Box>
+    
+          {/* Pet images grid section */}
+          <Box
+            sx={{
+              position: 'relative',
+              top: '-50px', // Dịch chuyển grid lên để hình ảnh "chồng" lên header
+              padding: '0 20px',
+            }}
+          >
+            <Grid container spacing={2}>
+              <Grid size={{xs:12, sm:16, md:3}}>
+                <Box
+                  component="img"
+                  src="https://i.pinimg.com/736x/67/5f/e0/675fe06061cc0cd024421b3f41210878.jpg"
+                  alt="av1"
+                  sx={{
+                    width: '100%',
+                    height: '352px',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                  }}
+                />
+              </Grid>
+              <Grid size={{xs:12, sm:16, md:3}}>
+                <Box
+                  component="img"
+                  src="https://th.bing.com/th/id/R.d4fd2bf2a1861d8d9c941394984e6d9d?rik=Qx%2b%2fy2ubTaWw%2bw&riu=http%3a%2f%2fcdn.images.dailystar.co.uk%2fdynamic%2f58%2fphotos%2f371000%2fLionel-Messi-917371.jpg&ehk=CxjeS%2fdupnVsnZ3PiU2QMjpcPISxVG1wVMYsoFyN10U%3d&risl=&pid=ImgRaw&r=0"
+                  alt="av2"
+                  sx={{
+                    width: '100%',
+                    height: '352px',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                  }}
+                />
+              </Grid>
+              <Grid size={{xs:12, sm:16, md:3}}>
+                <Box
+                  component="img"
+                  src="https://th.bing.com/th/id/OIP.LBiNkKpQqXAl-0JGJr42XwHaJO?w=827&h=1030&rs=1&pid=ImgDetMain"
+                  alt="av3"
+                  sx={{
+                    width: '100%',
+                    height: '352px',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                  }}
+                />
+              </Grid>
+              <Grid size={{xs:12, sm:16, md:3}}>
+                <Box
+                  component="img"
+                  src="https://static.bongda24h.vn/medias/standard/2022/08/01/Vinicius_Junior24_0108101240.jpg"
+                  alt="av4"
+                  sx={{
+                    width: '100%',
+                    height: '352px',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
-    );
+      );
 };
 
 
 export default function DashboardLayoutSlots(props: DemoProps) {
     const { window } = props;
 
-    const [pathname, setPathname] = React.useState('/dashboard');
+    const [pathname, setPathname] = React.useState('/');
 
     const router = React.useMemo<Router>(() => {
         return {
@@ -599,8 +629,8 @@ export default function DashboardLayoutSlots(props: DemoProps) {
     // #cfdad0
     return (
         <Box
-            sx={{ 
-                backgroundImage: 'url("https://congdankhuyenhoc.qltns.mediacdn.vn/449484899827462144/2022/12/30/chum-anh-can-canh-svd-jalan-besar-noi-dien-ra-tran-viet-nam-dau-singapore-1672308235-8-1672387394412-16723873946831528897086.jpg")', // Replace with your image URL
+            sx={{
+                backgroundImage: pathname === '/' ? null : 'url("https://congdankhuyenhoc.qltns.mediacdn.vn/449484899827462144/2022/12/30/chum-anh-can-canh-svd-jalan-besar-noi-dien-ra-tran-viet-nam-dau-singapore-1672308235-8-1672387394412-16723873946831528897086.jpg")', // Replace with your image URL
                 backgroundSize: 'cover', // Makes the background cover the entire area
                 backgroundPosition: 'center', // Centers the image
                 minHeight: '100vh'

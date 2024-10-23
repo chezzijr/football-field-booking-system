@@ -76,7 +76,7 @@ export function BookingTable() {
     };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            handleSearch(); 
+            handleSearch();
         }
     };
 
@@ -96,17 +96,17 @@ export function BookingTable() {
                     color="primary"
                     onClick={handleSearch}
                 >
-                    <SearchIcon/>
+                    <SearchIcon />
                 </Button>
             </Box>
 
             <TableContainer
                 component={Paper}
-                sx={{ 
-                    mt: 2, 
-                    borderRadius: '0.5rem', 
-                    overflowY: 'auto', 
-                    maxHeight: 440, 
+                sx={{
+                    mt: 2,
+                    borderRadius: '0.5rem',
+                    overflowY: 'auto',
+                    maxHeight: 440,
                 }}
             >
                 <Table size='small' aria-label="booking table" stickyHeader>
@@ -187,10 +187,12 @@ export function BookingTableFull() {
                 <TableHead>
                     <TableRow>
                         <StyledTableCell>Tên khách hàng</StyledTableCell>
+                        <StyledTableCell>Số căn cước</StyledTableCell>
                         <StyledTableCell>SĐT</StyledTableCell>
                         <StyledTableCell>Ngày giờ nhận sân</StyledTableCell>
                         <StyledTableCell>Ngày giờ trả sân</StyledTableCell>
                         <StyledTableCell>Loại sân</StyledTableCell>
+                        <StyledTableCell>Trạng thái</StyledTableCell>
                         <StyledTableCell>Xóa</StyledTableCell>
                     </TableRow>
                 </TableHead>
@@ -198,10 +200,27 @@ export function BookingTableFull() {
                     {filteredRows.map((row, index) => (
                         <StyledTableRow key={index}>
                             <TableCell>{row.customer}</TableCell>
+                            <TableCell>{row.id}</TableCell>
                             <TableCell>{row.customerPhone}</TableCell>
                             <TableCell>{new Date(row.start).toLocaleString("vi-VN")}</TableCell>
                             <TableCell>{new Date(row.end).toLocaleString("vi-VN")}</TableCell>
                             <TableCell>{FieldType.find(f => Number(f.value) === row.fieldNo)?.label || 'Unknown Field'}</TableCell>
+                            <TableCell><Box
+                                sx={{
+                                    backgroundColor: row.paid ? '#cae388' : '#f78a8c',
+                                    color: row.paid ? '#1C9301' : '#880103',
+                                    padding: '4px 12px',
+                                    borderRadius: '3px',
+                                    fontWeight: 'bold',
+                                    textAlign: 'center', 
+                                    margin: '0 auto', 
+                                    border: '2px solid',  
+                                    borderColor: row.paid ? '#1C9301' : '#880103',
+                                    width: '140px',
+                                }}
+                            >
+                                {row.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                            </Box></TableCell>
                             <TableCell>
                                 <button onClick={() => {
                                     fetch(`/api/schedule?id=${row.id}`, {
