@@ -66,7 +66,7 @@ export function BookingTable() {
                 setFilteredSchedules(filteredToday);
             })
             .catch((error) => console.error('Error!!!:', error));
-    }, []);
+    }, [adding]);
 
     const handleSearch = () => {
         const filtered = schedules.filter(schedule =>

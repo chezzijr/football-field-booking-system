@@ -17,25 +17,25 @@ export default {
         const { id, fieldNo, start, end, duration, customer, customerPhone, paid } = sched;
 
         if (!id) {
-            throw new Error("schedule id is required for adding a new schedule");
+            throw new Error("Điền đầy đủ thông tin khách hàng");
         }
         if (!fieldNo) {
             throw new Error("field number is required for adding a new schedule");
         }
         if (!start || !end) {
-            throw new Error("start and end dates are required for adding a new schedule");
+            throw new Error("Điền ngày giờ nhận sân");
         }
         if (new Date(start) >= new Date(end)) {
-            throw new Error("start date must be earlier than end date");
+            throw new Error("Ngày nhận sân phải sớm hơn ngày trả sân");
         }
         if (!customer) {
-            throw new Error("customer name is required for adding a new schedule");
+            throw new Error("Điền đầy đủ thông tin khách hàng");
         }
         if (!customerPhone) {
-            throw new Error("customer phone is required for adding a new schedule");
+            throw new Error("Điền đầy đủ thông tin khách hàng");
         }
         if (!duration) {
-            throw new Error("duration is required for adding a new schedule");
+            throw new Error("Vui lòng chọn lại giờ trả sân");
         }
         if (paid === undefined || paid === null) {
             throw new Error("paid is required for adding a new schedule");

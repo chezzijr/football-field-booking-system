@@ -11,29 +11,29 @@ export type HomePageProps = {
 }
 
 export default function HomePage(props: HomePageProps) {
-    const [fields, setFields] = useState<Field[]>(props.fields);
-    function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
+    // const [fields, setFields] = useState<Field[]>(props.fields);
+    // function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
+    //     e.preventDefault();
 
-        const newField: Field = {
-            no: fields.length + 1,
-            isAvailable: true,
-            isMaintained: false
-        }
+    //     const newField: Field = {
+    //         no: fields.length + 1,
+    //         isAvailable: true,
+    //         isMaintained: false
+    //     }
 
-        fetch("/api/fields", {
-            method: "POST",
-            body: JSON.stringify(newField)
-        }).then((res) => {
-            if (res.ok) {
-                setFields([...fields, newField])
-            } else {
-                alert("Failed to add field: " + res.statusText)
-            }
-        }).catch((err) => {
-            alert("Failed to add field: " + err)
-        })
-    }
+    //     fetch("/api/fields", {
+    //         method: "POST",
+    //         body: JSON.stringify(newField)
+    //     }).then((res) => {
+    //         if (res.ok) {
+    //             setFields([...fields, newField])
+    //         } else {
+    //             alert("Failed to add field: " + res.statusText)
+    //         }
+    //     }).catch((err) => {
+    //         alert("Failed to add field: " + err)
+    //     })
+    // }
 
     return (
         <Box>

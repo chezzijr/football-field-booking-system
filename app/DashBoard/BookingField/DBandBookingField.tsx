@@ -22,9 +22,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { ServiceAndPay } from '../ServiceAndPay/ServiceAndPay';
 import { UpdateInformation } from '../Data/UpdateInfo';
-import {Typography} from '@mui/material';
-import ball from './BookingField/ball.png';
-import Image from 'next/image';
+import { Typography } from '@mui/material';
 
 const NAVIGATION: Navigation = [
     {
@@ -271,21 +269,6 @@ export let adding = false;
 
 function RegisterInfo() {
 
-    const [inputValue, setInputValue] = useState<{ [key: string]: string }>({
-        fullName: '',
-        idNumber: '',
-        phoneNumber: '',
-        address: '',
-        nationality: '',
-        numberOfPeople: '',
-    });
-
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
-
-    const handleDateChange = (date: Dayjs | null) => {
-        setSelectedDate(date);
-    };
-
     const [schedule, setSchedule] = useState<Omit<Schedule, 'fieldNo' | 'paid' | 'duration'>>({
         id: '',
         start: '',
@@ -301,11 +284,6 @@ function RegisterInfo() {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
-        if (!schedule.id || !schedule.start || !schedule.end || !fieldNo || !duration || !schedule.customer || !schedule.customerPhone) {
-            setError("Cần điền đủ thông tin.");
-            return;
-        }
 
         setError(null);
 
@@ -343,7 +321,23 @@ function RegisterInfo() {
             setError(error.message);
         }
     };
+    const [currentIndex, setCurrentIndex] = useState(0); 
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) =>
+                prevIndex === fieldImages.length - 1 ? 0 : prevIndex + 1
+            );
+        }, 2000); 
+
+        return () => clearInterval(interval); 
+    }, []);
+    const fieldImages = [
+        'https://assets2.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/A3D090E5C87B4240BC03138FEC718B84/1.jpg', 
+        'https://i.pinimg.com/736x/f5/9a/2c/f59a2cc5e8b8f13d348f757263a5f4c1.jpg',
+        'https://sportsvenuecalculator.com/wp-content/uploads/2023/09/4-3.jpg',
+        'https://www.xgrass.com/cmss_files/imagelibrary/sub-openplay-field.jpg'
+    ];
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ flexGrow: 1 }}>
@@ -375,7 +369,10 @@ function RegisterInfo() {
                             <BasicDateTimeInput
                                 label="Ngày giờ trả sân"
                                 value={schedule.end}
-                                onChange={(e) => setSchedule({ ...schedule, end: e.target.value })}
+                                onChange={(e) => {
+                                    setSchedule({ ...schedule, end: e.target.value });
+                                    setDuration((new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 60000);
+                                }}
                             />
                         </Grid>
 
@@ -400,28 +397,16 @@ function RegisterInfo() {
                                 boxShadow: 15,
                                 // pb: 1,
                             }}>
-                            <StyledH3 sx={{ pt: '1rem' }}>Cập nhật sân</StyledH3>
+                            <StyledH3 sx={{ pt: '1rem' }}>Hình ảnh sân</StyledH3>
                             <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '70%' }} />
-                            <Box sx={{
-                                // display: 'flex',
-                                // alignItems: 'center',
-                            }}>
-                                <BasicTextFields
-                                    label="Mã số sân"
-                                    inputValue={inputValue.idNumber}
-                                    onInputChange={(e) => setInputValue({})}
+
+                            <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem' }}>
+                                <img
+                                    src={fieldImages[currentIndex]} 
+                                    alt={`Field ${currentIndex + 1}`}
+                                    style={{ width: '100%', maxWidth: '600px', height:'170px'}} 
                                 />
-                                <BasicTextFields
-                                    label="Loại sân"
-                                    inputValue={inputValue.idNumber}
-                                    onInputChange={(e) => setInputValue({})}
-                                />
-                                <Box sx={{ padding: '1rem' }}>
-                                    <Button variant="contained" >
-                                        Thêm
-                                    </Button>
-                                </Box>
-                            </Box>
+                            </div>
                         </Grid>
 
 
@@ -454,7 +439,7 @@ function RegisterInfo() {
                             inputValue={schedule.id}
                             onInputChange={(e) => setSchedule({ ...schedule, id: e.target.value })}
                         />
-                        <BasicDateTimeInput
+                        {/* <BasicDateTimeInput
                             label="Ngày sinh"
                             value={inputValue.id}
                             onChange={(e) => setInputValue({})}
@@ -463,9 +448,23 @@ function RegisterInfo() {
                             label="Địa chỉ"
                             inputValue={inputValue.address}
                             onInputChange={(e) => setInputValue({})}
-                        />
+                        /> */}
                         <Box sx={{ minWidth: 120, m: '0.5rem 1rem' }}>
                             <TextField
+                                id="outlined-read-only-input"
+                                label="Thời gian sử dụng sân"
+                                size='small'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                defaultValue={`${(new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 3600000} h`}
+                                slotProps={{
+                                    input: {
+                                        readOnly: true,
+                                    },
+                                }}
+                            />
+                            {/* <TextField
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
@@ -473,7 +472,7 @@ function RegisterInfo() {
                                 id="outlined-basic" label="Duration" variant="outlined" size='small'
                                 value={duration}
                                 onChange={(e) => setDuration(Number(e.target.value))}
-                            />
+                            /> */}
                         </Box>
                         <Box sx={{ m: '0.5rem 1rem' }}>
                             <FormControlLabel
@@ -512,22 +511,22 @@ function RegisterInfo() {
 
 const TitleComponent: React.FC = () => {
     return (
-        <Box 
-            display="flex" 
-            flexDirection="column" 
-            justifyContent="center" 
-            alignItems="center" 
-            height="90vh" 
-            textAlign="center" 
+        <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            height="90vh"
+            textAlign="center"
             position="relative"
         >
-            <Box 
+            <Box
                 sx={{
                     position: 'relative',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-                    padding: '4rem', 
-                    borderRadius: '10px', 
-                    overflow: 'hidden', 
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: '4rem',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
                 }}
             >
                 <Typography variant="h2" sx={{ fontSize: '100px', fontWeight: 'bold', color: 'white' }}>
@@ -542,8 +541,8 @@ const TitleComponent: React.FC = () => {
                     alt="Soccer Ball"
                     sx={{
                         position: 'absolute',
-                        width: '60px', 
-                        animation: 'rollAround 10s linear infinite', 
+                        width: '60px',
+                        animation: 'rollAround 10s linear infinite',
                     }}
                 />
             </Box>
@@ -600,7 +599,7 @@ export default function DashboardLayoutSlots(props: DemoProps) {
     // #cfdad0
     return (
         <Box
-            sx={{
+            sx={{ 
                 backgroundImage: 'url("https://congdankhuyenhoc.qltns.mediacdn.vn/449484899827462144/2022/12/30/chum-anh-can-canh-svd-jalan-besar-noi-dien-ra-tran-viet-nam-dau-singapore-1672308235-8-1672387394412-16723873946831528897086.jpg")', // Replace with your image URL
                 backgroundSize: 'cover', // Makes the background cover the entire area
                 backgroundPosition: 'center', // Centers the image
