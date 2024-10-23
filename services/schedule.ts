@@ -50,6 +50,16 @@ export default {
         if (existingSchedule) {
             throw new Error(`schedule with id = ${id} is already existed`);
         }
+
+        const allSchedules = await scheduleModel.readAll();
+        allSchedules.forEach((schedule) => {
+            if (new Date(start) >= new Date(schedule.start) && new Date(start) < new Date(schedule.end)) {
+                throw new Error(`field ${fieldNo} is already booked at ${schedule.start}`)
+            }
+            if (new Date(end) > new Date(schedule.start) && new Date(end) <= new Date(schedule.end)) {
+                throw new Error(`field ${fieldNo} is already booked at ${schedule.start}`)
+            }
+        })
         
         const res = await scheduleModel.add(sched);
         if (!res) {
