@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { TextField } from '@mui/material';
 import Divider from '@mui/material/Box';
@@ -15,7 +15,6 @@ import { Payment } from '@/types/payment';
 import Grid from '@mui/material/Grid2';
 import { toast } from 'react-toastify';
 
-export var check = false;
 interface QuantitySelectorProps {
     onQuantityChange: (quantity: number) => void;  // Callback để truyền giá trị số lượng lên parent
     label: string;
@@ -47,6 +46,24 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ onQuantityChange, l
 };
 
 export function ServiceAndPay() {
+    const [payments, setPayments] = useState<Payment[]>([]);
+
+    useEffect(() => {
+        fetch("/api/payment", { method: 'GET', cache: 'reload' })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Không thể hiển thị lịch sử giao dịch: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then((data: Payment[]) => {
+                setPayments(data);
+            })
+            .catch((err) => {
+                toast.error('Không thể hiển thị lịch sử giao dịch: ' + err.message);
+            });
+    }, []);
+
     const typeService = [
         { label: 'Thuê huấn luyện viên', value: '0', price: 100000 },
         { label: 'Thuê giày', value: '1', price: 50000 },
@@ -125,7 +142,7 @@ export function ServiceAndPay() {
                                 }).then((res) => {
                                     if (res.ok) {
                                         toast.success('Thanh toán thành công');
-                                        check = !check;
+                                        setPayments([...payments, bill]);
                                     } else {
                                         toast.error('Thanh toán thất bại: ' + res.statusText);
                                     }
@@ -151,7 +168,7 @@ export function ServiceAndPay() {
                         <StyledH3>Lịch sử giao dịch</StyledH3>
                         <Divider sx={{ height: '2px', backgroundColor: '#a8a9aa', width: '40%', }} />
                         <Box sx={{ maxHeight: '526px', overflowY: 'auto', padding: 2, }}>
-                            <PaymentHistory />
+                            <PaymentHistory payments={payments} />
                         </Box>
                     </Grid>
 

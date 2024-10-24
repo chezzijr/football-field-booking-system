@@ -3,29 +3,10 @@ import { Box, TextField, Button, Grid, Typography, Table, TableBody, TableCell, 
 import { Payment } from '@/types/payment';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
-import { check } from './ServiceAndPay';
 import { LineChart } from '@mui/x-charts/LineChart';
 
-export function PaymentHistory() {
-    const [payments, setPayments] = useState<Payment[]>([]);
-    const [error, setError] = useState<string | null>(null);
+export function PaymentHistory({ payments }: { payments: Payment[] }) {
     const endRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        fetch("/api/payment", { method: 'GET', cache: 'reload' })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Không thể hiển thị thông tin giao dịch');
-                }
-                return response.json();
-            })
-            .then((data: Payment[]) => {
-                setPayments(data);
-            })
-            .catch((err) => {
-                setError(err.message);
-            });
-    }, [check]);
 
     function scrollToBottom() {
         endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +19,7 @@ export function PaymentHistory() {
     return (
         <Box sx={{ padding: '1rem', backgroundColor: '#f5f5f5', mb: 4 }}>
             <div style={{ padding: '20px' }}>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
 
                 <div>
                     {payments.map((payment) => (
@@ -112,7 +93,7 @@ export function TransactionChart() {
             .catch((err) => {
                 setError(err.message);
             });
-    }, [check]);
+    }, []);
     const chartData = payments.map(payment => ({
         x: new Date(payment.date).getTime(),
         y: payment.amount,
