@@ -13,6 +13,7 @@ import { StyledH3, theme, BasicSelect } from '../BookingField/DBandBookingField'
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Payment } from '@/types/payment';
 import Grid from '@mui/material/Grid2';
+import { toast } from 'react-toastify';
 
 export var check = false;
 interface QuantitySelectorProps {
@@ -123,13 +124,13 @@ export function ServiceAndPay() {
                                     }
                                 }).then((res) => {
                                     if (res.ok) {
-                                        alert('Thanh toán thành công');
+                                        toast.success('Thanh toán thành công');
                                         check = !check;
                                     } else {
-                                        alert('Thanh toán thất bại ' + res.statusText);
+                                        toast.error('Thanh toán thất bại: ' + res.statusText);
                                     }
                                 }).catch((error) => {
-                                    alert('Thanh toán thất bại: ' + error);
+                                    toast.error('Thanh toán thất bại: ' + error);
                                 })
                             }}
                         >

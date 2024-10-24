@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react'; // Import useState từ React
 import Box from '@mui/material/Box';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Typography from '@mui/material/Typography';
-import { SelectChangeEvent } from '@mui/material/Select';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
@@ -19,6 +13,7 @@ import { TextField, Button } from '@mui/material';
 import { InputAdornment } from '@mui/material';
 import { Schedule, adding } from './DBandBookingField';
 import SearchIcon from '@mui/icons-material/Search';
+import { toast } from 'react-toastify';
 
 export const FieldType = [
     { label: 'Sân', value: '0' },
@@ -133,10 +128,10 @@ export function BookingTable() {
                                                 setSchedules(schedules.filter(s => s.id !== schedule.id));
                                                 setFilteredSchedules(filteredSchedules.filter(s => s.id !== schedule.id));
                                             } else {
-                                                alert('Error!!!: ' + response.statusText);
+                                                toast.error('Xóa lịch đặt sân thất bại: ' + response.statusText);
                                             }
-                                        }).catch((err) => alert('Error!!!: ' + err));
-                                    }}><DeleteForeverIcon /></button>
+                                        }).catch((err) => toast.error('Xóa lịch đặt sân thất bại: ' + err));
+                                   }}><DeleteForeverIcon /></button>
                                 </TableCell>
                             </StyledTableRow>
                         ))}
@@ -229,9 +224,9 @@ export function BookingTableFull() {
                                         if (response.ok) {
                                             setRows(rows.filter(s => s.id !== row.id));
                                         } else {
-                                            alert('Error!!!: ' + response.statusText);
+                                            toast.error('Xóa lịch đặt sân thất bại: ' + response.statusText);
                                         }
-                                    }).catch((err) => alert('Error!!!: ' + err));
+                                    }).catch((err) => toast.error('Xóa lịch đặt sân thất bại: ' + err));
                                 }}><DeleteForeverIcon /></button>
                             </TableCell>
                         </StyledTableRow>
