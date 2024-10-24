@@ -53,7 +53,7 @@ export function ServiceAndPay() {
         { label: 'Thuê áo đấu', value: '3', price: 50000 },
         { label: 'Không', value: '4', price: 0 },
     ];
-    const othersService = [
+    const beverageService = [
         { label: 'Bình nước 20L', value: '0', price: 50000 },
         { label: 'Revive', value: '1', price: 10000 },
         { label: 'Pocari', value: '2', price: 15000 },
@@ -61,15 +61,15 @@ export function ServiceAndPay() {
         { label: 'Không', value: '4', price: 0 },
     ];
     const [selectedType, setSelectedType] = useState<string>('4');
-    const [othersType, setOthersType] = useState<string>('4');
-    const [quantity, setQuantity] = useState<number>(1);
-    const [quantity2, setQuantity2] = useState<number>(1);
+    const [beverageType, setBeverageType] = useState<string>('4');
+    const [serviceQuantity, setServiceQuantity] = useState<number>(1);
+    const [beverageQuantity, setBeverageQuantity] = useState<number>(1);
 
-    const handleQuantityChange = (newQuantity: number) => {
-        setQuantity(newQuantity);
+    const handleServiceQuantityChange = (newQuantity: number) => {
+        setServiceQuantity(newQuantity);
     };
-    const handleQuantityChange2 = (newQuantity: number) => {
-        setQuantity2(newQuantity);
+    const handleBeverageQuantityChange = (newQuantity: number) => {
+        setBeverageQuantity(newQuantity);
     };
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -87,7 +87,7 @@ export function ServiceAndPay() {
                         <Divider sx={{ mb: 2, height: '2px', backgroundColor: '#a8a9aa', width: '40%', }} />
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', }}>
                             <BasicSelect title='Loại dịch vụ' selection={typeService} value={selectedType} onChange={setSelectedType} />
-                            <BasicSelect title='Nước uống' selection={othersService} value={othersType} onChange={setOthersType} />
+                            <BasicSelect title='Nước uống' selection={beverageService} value={beverageType} onChange={setBeverageType} />
                             {/* <QuantitySelector /> */}
                         </Box>
                         <Box sx={{
@@ -96,23 +96,23 @@ export function ServiceAndPay() {
                             alignItems: 'center', 
                             gap: 2, 
                         }}>
-                            <QuantitySelector onQuantityChange={handleQuantityChange} label='Số lượng dịch vụ: ' />
-                            <QuantitySelector onQuantityChange={handleQuantityChange} label='Số lượng nước: ' />
+                            <QuantitySelector onQuantityChange={handleServiceQuantityChange} label='Số lượng dịch vụ: ' />
+                            <QuantitySelector onQuantityChange={handleBeverageQuantityChange} label='Số lượng nước: ' />
                         </Box>
-                        <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) + (othersService.find(t => t.value === othersType)?.price || 0) * quantity}</StyledH3>
+                        <StyledH3>Thành tiền: {(typeService.find(t => t.value === selectedType)?.price || 0) * serviceQuantity + (beverageService.find(t => t.value === beverageType)?.price || 0) * beverageQuantity}</StyledH3>
                         <Button
                             variant="contained"
                             color="success"
                             sx={{ mt: 2, ml: 2, mb: 2 }}
                             startIcon={<PaymentIcon />}
                             onClick={() => {
-                                const serviceTotal = typeService.find(t => t.value === selectedType)?.price || 0;
-                                const othersTotal = othersService.find(t => t.value === othersType)?.price || 0;
+                                const serviceTotal = (typeService.find(t => t.value === selectedType)?.price || 0) * serviceQuantity;
+                                const othersTotal = (beverageService.find(t => t.value === beverageType)?.price || 0) * beverageQuantity;
                                 const randomId = (Math.random() + 1).toString(36).substring(7);
                                 const bill: Payment = {
                                     id: randomId,
                                     amount: serviceTotal + othersTotal,
-                                    description: `Dịch vụ: ${typeService.find(t => t.value === selectedType)?.label || 'Không'}; Nước: ${othersService.find(t => t.value === othersType)?.label || 'Không'}`,
+                                    description: `Dịch vụ: ${typeService.find(t => t.value === selectedType)?.label || 'Không'}; Nước: ${beverageService.find(t => t.value === beverageType)?.label || 'Không'}`,
                                     date: new Date(),
                                 }
                                 fetch('/api/payment', {
