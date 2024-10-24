@@ -338,6 +338,11 @@ function RegisterInfo() {
         'https://sportsvenuecalculator.com/wp-content/uploads/2023/09/4-3.jpg',
         'https://www.xgrass.com/cmss_files/imagelibrary/sub-openplay-field.jpg'
     ];
+    useEffect(() => {
+        if (schedule.start && schedule.end) {
+            setDuration((new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 60000);
+        }
+    }, [schedule.start, schedule.end]);
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ flexGrow: 1 }}>
@@ -428,7 +433,7 @@ function RegisterInfo() {
                             inputValue={schedule.customer}
                             onInputChange={(e) => {
                                 setSchedule({ ...schedule, customer: e.target.value });
-                                setDuration((new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 60000);
+                                
                             }}
                         />
                         <BasicTextFields
@@ -459,7 +464,7 @@ function RegisterInfo() {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                defaultValue={`${(new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 3600000} h`}
+                                value={`${(new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 3600000} h`}
                                 slotProps={{
                                     input: {
                                         readOnly: true,
