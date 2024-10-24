@@ -464,7 +464,7 @@ function RegisterInfo() {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={`${(new Date(schedule.end).getTime() - new Date(schedule.start).getTime()) / 3600000} h`}
+                                value={`${Number(duration)/60} h`}
                                 slotProps={{
                                     input: {
                                         readOnly: true,
